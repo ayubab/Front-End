@@ -71,38 +71,260 @@ export default function DaftarItemPage() {
       </div>
 
       {/* Content */}
-      <div className="max-w-4xl mx-auto p-6">
-        <div className="space-y-3">
-          {items.map((item) => (
-            <div
-              key={item.id}
-              className="bg-white rounded-2xl p-5 shadow-lg hover:shadow-xl transition-all duration-200"
-            >
-              <div className="flex items-center justify-between">
-                <div className="flex-1">
-                  <h3 className="font-semibold text-gray-800 mb-1">{item.name}</h3>
-                  <div className="flex items-center gap-4 text-sm text-gray-600">
-                    <span className="flex items-center gap-1">
-                      <span className="w-2 h-2 bg-green-500 rounded-full"></span>
-                      Status: Tersedia
-                    </span>
-                    <span>Kondisi: Baik</span>
-                  </div>
-                </div>
-                <button
-                  onClick={() => handleInputClick(item.id)}
-                  className="px-6 py-2 bg-cyan-500 hover:bg-cyan-600 text-white font-semibold rounded-xl transition-colors"
+      {categoryId === 'apar' ? (
+        /* APAR Form */
+        <div className="max-w-4xl mx-auto p-6">
+          <div className="bg-white rounded-2xl shadow-2xl p-6">
+            <div className="mb-6">
+              <h2 className="text-xl font-bold text-gray-800">Input Rekap K3 - APAR</h2>
+              <p className="text-sm text-gray-600 mt-1">Masukkan data APAR untuk {location.name}</p>
+            </div>
+
+            <form onSubmit={handleSubmit} className="space-y-4">
+              {/* KANTOR/GARDU INDUK */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  KANTOR/GARDU INDUK <span className="text-red-500">*</span>
+                </label>
+                <select
+                  required
+                  defaultValue={locationId}
+                  className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-500"
                 >
-                  Input
+                  <option value={locationId}>{location.name}</option>
+                </select>
+              </div>
+
+              {/* NO. APAR */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  NO. APAR <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  required
+                  placeholder="Masukkan nomor APAR"
+                  className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                />
+              </div>
+
+              {/* LOKASI */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  LOKASI <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  required
+                  placeholder="Masukkan lokasi APAR"
+                  className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                />
+              </div>
+
+              {/* MERK */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  MERK <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  required
+                  placeholder="Masukkan merk APAR"
+                  className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                />
+              </div>
+
+              {/* KAPASITAS (KG) */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  KAPASITAS (KG) <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="number"
+                  required
+                  step="0.1"
+                  placeholder="Masukkan kapasitas dalam KG"
+                  className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                />
+              </div>
+
+              {/* JENIS */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  JENIS <span className="text-red-500">*</span>
+                </label>
+                <select
+                  required
+                  className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                >
+                  <option value="">Pilih jenis APAR</option>
+                  <option value="co2">CO2</option>
+                  <option value="powder">Powder</option>
+                  <option value="foam">Foam</option>
+                  <option value="water">Water</option>
+                </select>
+              </div>
+
+              {/* TANGGAL INSPERSI */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  TANGGAL INSPERSI <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="date"
+                  required
+                  defaultValue={new Date().toISOString().split('T')[0]}
+                  className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                />
+              </div>
+
+              {/* BAHAN PEMADAM */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  BAHAN PEMADAM <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  required
+                  placeholder="Masukkan bahan pemadam"
+                  className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                />
+              </div>
+
+              {/* KELAS KEBAKARAN */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  KELAS KEBAKARAN <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  required
+                  placeholder="Contoh: A, B, C, D"
+                  className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                />
+              </div>
+
+              {/* TANGGAL PENGISIAN */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  TANGGAL PENGISIAN <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="date"
+                  required
+                  className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                />
+              </div>
+
+              {/* KADALUARSA */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  KADALUARSA <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="date"
+                  required
+                  className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                />
+              </div>
+
+              {/* KONDI */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  KONDI <span className="text-red-500">*</span>
+                </label>
+                <select
+                  required
+                  className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                >
+                  <option value="">Pilih kondisi</option>
+                  <option value="normal">NORMAL</option>
+                  <option value="abnormal">ABNORMAL</option>
+                  <option value="kadaluwarsa">KADALUWARSA</option>
+                  <option value="tekanan-berkurang">TEKANAN BERKURANG</option>
+                </select>
+              </div>
+
+              {/* KETERANGAN */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  KETERANGAN <span className="text-red-500">*</span>
+                </label>
+                <textarea
+                  required
+                  rows={4}
+                  placeholder="Masukkan keterangan"
+                  className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-500 resize-none"
+                />
+              </div>
+
+              {/* AMBIL FOTO */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  AMBIL FOTO
+                </label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  capture="environment"
+                  className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-cyan-50 file:text-cyan-700 hover:file:bg-cyan-100"
+                />
+              </div>
+
+              {/* Buttons */}
+              <div className="flex gap-3 pt-4">
+                <button
+                  type="button"
+                  onClick={handleBack}
+                  className="flex-1 px-6 py-3 bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold rounded-xl transition-colors"
+                >
+                  Batal
+                </button>
+                <button
+                  type="submit"
+                  className="flex-1 px-6 py-3 bg-cyan-500 hover:bg-cyan-600 text-white font-semibold rounded-xl transition-colors"
+                >
+                  Simpan
                 </button>
               </div>
-            </div>
-          ))}
+            </form>
+          </div>
         </div>
-      </div>
+      ) : (
+        /* Default Item List for Other Categories */
+        <div className="max-w-4xl mx-auto p-6">
+          <div className="space-y-3">
+            {items.map((item) => (
+              <div
+                key={item.id}
+                className="bg-white rounded-2xl p-5 shadow-lg hover:shadow-xl transition-all duration-200"
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex-1">
+                    <h3 className="font-semibold text-gray-800 mb-1">{item.name}</h3>
+                    <div className="flex items-center gap-4 text-sm text-gray-600">
+                      <span className="flex items-center gap-1">
+                        <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                        Status: Tersedia
+                      </span>
+                      <span>Kondisi: Baik</span>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => handleInputClick(item.id)}
+                    className="px-6 py-2 bg-cyan-500 hover:bg-cyan-600 text-white font-semibold rounded-xl transition-colors"
+                  >
+                    Input
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
-      {/* Modal Form */}
-      {selectedItem && selectedItemData && (
+      {/* Modal Form for Other Categories */}
+      {selectedItem && selectedItemData && categoryId !== 'apar' && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
             <div className="sticky top-0 bg-cyan-600 text-white p-4 rounded-t-2xl">
@@ -119,6 +341,7 @@ export default function DaftarItemPage() {
             </div>
 
             <form onSubmit={handleSubmit} className="p-6 space-y-4">
+              {/* Default Fields for Other Categories */}
               {/* LOKASI */}
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-2">
