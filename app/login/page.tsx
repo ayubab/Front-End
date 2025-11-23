@@ -19,8 +19,16 @@ export default function LoginPage() {
       return;
     }
 
-    // For demo purposes, accept any credentials
-    // In production, this would be actual authentication
+    // Hard-coded authentication
+    const validEmail = 'admin';
+    const validPassword = 'admin';
+
+    if (email !== validEmail || password !== validPassword) {
+      setError('Email atau password salah');
+      return;
+    }
+
+    // Authentication successful
     localStorage.setItem('isLoggedIn', 'true');
     router.push('/pilih-lokasi');
   };
@@ -42,8 +50,8 @@ export default function LoginPage() {
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <input
-                type="email"
-                placeholder="Email"
+                type="text"
+                placeholder="Username"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
