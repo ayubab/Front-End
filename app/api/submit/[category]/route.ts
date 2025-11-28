@@ -9,10 +9,15 @@ async function uploadToDrive(file: File, auth: any): Promise<string | null> {
     // Convert File to buffer
     const buffer = Buffer.from(await file.arrayBuffer());
 
-    const fileMetadata = {
+    const fileMetadata: any = {
       name: file.name,
-      parents: [process.env.GOOGLE_DRIVE_FOLDER_ID || ''], // Optional: specify folder
     };
+
+    // Only add parents if folder ID is specified
+    const folderId = process.env.GOOGLE_DRIVE_FOLDER_ID;
+    if (folderId && folderId.trim()) {
+      fileMetadata.parents = [folderId.trim()];
+    }
 
     const media = {
       mimeType: file.type,
@@ -209,11 +214,15 @@ export async function POST(request: NextRequest, { params }: { params: { categor
     // Handle photo upload if present
     let photoFormula = '';
     if (data.ambilFoto instanceof File) {
-      console.log('Uploading photo to Google Drive...');
+      console.log('Uploading photo to Google Drive...', {
+        fileName: data.ambilFoto.name,
+        fileSize: data.ambilFoto.size,
+        fileType: data.ambilFoto.type
+      });
       const fileId = await uploadToDrive(data.ambilFoto, auth);
       if (fileId) {
-        // Create IMAGE formula for Google Sheets
-        photoFormula = `=IMAGE("https://drive.google.com/uc?id=${fileId}")`;
+        // Create IMAGE formula for Google Sheets using direct download link
+        photoFormula = `=IMAGE("https://drive.google.com/uc?export=view&id=${fileId}", 1)`;
         console.log('Photo uploaded successfully, formula:', photoFormula);
       } else {
         photoFormula = 'Upload gagal';
@@ -221,6 +230,7 @@ export async function POST(request: NextRequest, { params }: { params: { categor
       }
     } else {
       photoFormula = data.ambilFoto || '';
+      console.log('No photo file found, using text:', photoFormula);
     }
 
     // Create row data in the exact order matching sheet columns (including ID column)
