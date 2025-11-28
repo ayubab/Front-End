@@ -43,11 +43,26 @@ export default function DaftarItemPage() {
     setSelectedItem(null);
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // Here you would normally save to backend
-    alert('Data berhasil disimpan!');
-    setSelectedItem(null);
+    const formData = new FormData(e.target as HTMLFormElement);
+
+    try {
+      const response = await fetch('/api/apar', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (response.ok) {
+        alert('Data berhasil disimpan!');
+        setSelectedItem(null);
+      } else {
+        alert('Gagal menyimpan data. Coba lagi.');
+      }
+    } catch (error) {
+      console.error('Error submitting form:', error);
+      alert('Terjadi kesalahan. Coba lagi.');
+    }
   };
 
   const selectedItemData = items.find(item => item.id === selectedItem);
@@ -87,6 +102,7 @@ export default function DaftarItemPage() {
                   KANTOR/GARDU INDUK <span className="text-red-500">*</span>
                 </label>
                 <select
+                  name="kantorGarduInduk"
                   required
                   defaultValue={locationId}
                   className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-500"
@@ -101,6 +117,7 @@ export default function DaftarItemPage() {
                   NO. APAR <span className="text-red-500">*</span>
                 </label>
                 <input
+                  name="noApar"
                   type="text"
                   required
                   placeholder="Masukkan nomor APAR"
@@ -114,6 +131,7 @@ export default function DaftarItemPage() {
                   LOKASI <span className="text-red-500">*</span>
                 </label>
                 <input
+                  name="lokasi"
                   type="text"
                   required
                   placeholder="Masukkan lokasi APAR"
@@ -127,6 +145,7 @@ export default function DaftarItemPage() {
                   MERK <span className="text-red-500">*</span>
                 </label>
                 <input
+                  name="merk"
                   type="text"
                   required
                   placeholder="Masukkan merk APAR"
@@ -140,6 +159,7 @@ export default function DaftarItemPage() {
                   KAPASITAS (KG) <span className="text-red-500">*</span>
                 </label>
                 <input
+                  name="kapasitas"
                   type="number"
                   required
                   step="0.1"
@@ -154,6 +174,7 @@ export default function DaftarItemPage() {
                   JENIS <span className="text-red-500">*</span>
                 </label>
                 <select
+                  name="jenis"
                   required
                   className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-500"
                 >
@@ -171,6 +192,7 @@ export default function DaftarItemPage() {
                   TANGGAL INSPERSI <span className="text-red-500">*</span>
                 </label>
                 <input
+                  name="tanggalInspeksi"
                   type="date"
                   required
                   defaultValue={new Date().toISOString().split('T')[0]}
@@ -184,6 +206,7 @@ export default function DaftarItemPage() {
                   BAHAN PEMADAM <span className="text-red-500">*</span>
                 </label>
                 <input
+                  name="bahanPemadam"
                   type="text"
                   required
                   placeholder="Masukkan bahan pemadam"
@@ -197,6 +220,7 @@ export default function DaftarItemPage() {
                   KELAS KEBAKARAN <span className="text-red-500">*</span>
                 </label>
                 <input
+                  name="kelasKebakaran"
                   type="text"
                   required
                   placeholder="Contoh: A, B, C, D"
@@ -210,6 +234,7 @@ export default function DaftarItemPage() {
                   TANGGAL PENGISIAN <span className="text-red-500">*</span>
                 </label>
                 <input
+                  name="tanggalPengisian"
                   type="date"
                   required
                   className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-500"
@@ -222,6 +247,7 @@ export default function DaftarItemPage() {
                   KADALUARSA <span className="text-red-500">*</span>
                 </label>
                 <input
+                  name="kadaluarsa"
                   type="date"
                   required
                   className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-500"
@@ -234,6 +260,7 @@ export default function DaftarItemPage() {
                   KONDI <span className="text-red-500">*</span>
                 </label>
                 <select
+                  name="kondi"
                   required
                   className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-500"
                 >
@@ -251,6 +278,7 @@ export default function DaftarItemPage() {
                   KETERANGAN <span className="text-red-500">*</span>
                 </label>
                 <textarea
+                  name="keterangan"
                   required
                   rows={4}
                   placeholder="Masukkan keterangan"
@@ -264,6 +292,7 @@ export default function DaftarItemPage() {
                   AMBIL FOTO
                 </label>
                 <input
+                  name="ambilFoto"
                   type="file"
                   accept="image/*"
                   capture="environment"
