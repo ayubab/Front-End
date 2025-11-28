@@ -124,7 +124,7 @@ export default function DaftarItemPage() {
                   type="text"
                   required
                   placeholder="Masukkan nomor APAR"
-                  className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                  className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-500 text-gray-900"
                 />
               </div>
 
@@ -138,7 +138,7 @@ export default function DaftarItemPage() {
                   type="text"
                   required
                   placeholder="Masukkan lokasi APAR"
-                  className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                  className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-500 text-gray-900"
                 />
               </div>
 
@@ -152,7 +152,7 @@ export default function DaftarItemPage() {
                   type="text"
                   required
                   placeholder="Masukkan merk APAR"
-                  className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                  className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-500 text-gray-900"
                 />
               </div>
 
@@ -167,7 +167,7 @@ export default function DaftarItemPage() {
                   required
                   step="0.1"
                   placeholder="Masukkan kapasitas dalam KG"
-                  className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                  className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-500 text-gray-900"
                 />
               </div>
 
@@ -179,7 +179,7 @@ export default function DaftarItemPage() {
                 <select
                   name="jenis"
                   required
-                  className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                  className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-500 text-gray-900"
                 >
                   <option value="">Pilih jenis APAR</option>
                   <option value="co2">CO2</option>
@@ -199,7 +199,7 @@ export default function DaftarItemPage() {
                   type="date"
                   required
                   defaultValue={new Date().toISOString().split('T')[0]}
-                  className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                  className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-500 text-gray-900"
                 />
               </div>
 
@@ -213,7 +213,7 @@ export default function DaftarItemPage() {
                   type="text"
                   required
                   placeholder="Masukkan bahan pemadam"
-                  className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                  className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-500 text-gray-900"
                 />
               </div>
 
