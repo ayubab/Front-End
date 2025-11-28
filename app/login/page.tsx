@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
+import { getUserByCredentials } from '@/lib/data';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -19,17 +20,19 @@ export default function LoginPage() {
       return;
     }
 
-    // Hard-coded authentication
-    const validEmail = 'admin';
-    const validPassword = 'admin';
-
-    if (email !== validEmail || password !== validPassword) {
+    // Check user credentials
+    const user = getUserByCredentials(email, password);
+    if (!user) {
       setError('Email atau password salah');
       return;
     }
 
     // Authentication successful
     localStorage.setItem('isLoggedIn', 'true');
+    localStorage.setItem('userRole', user.role);
+    localStorage.setItem('userOffice', user.office);
+    localStorage.setItem('viewMode', 'input'); // Default to input mode
+    
     router.push('/pilih-lokasi');
   };
 
@@ -50,8 +53,8 @@ export default function LoginPage() {
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <input
-                type="text"
-                placeholder="Username"
+                type="email"
+                placeholder="admin@ultg.co.id"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
@@ -61,7 +64,7 @@ export default function LoginPage() {
             <div>
               <input
                 type="password"
-                placeholder="Password"
+                placeholder="admin123"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent"

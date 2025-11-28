@@ -29,6 +29,7 @@ export async function POST(request: NextRequest) {
     // Google Sheets API setup
     const credentials = JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT_KEY || '{}');
     const spreadsheetId = process.env.GOOGLE_SHEET_ID;
+    const sheetName = process.env.GOOGLE_SHEET_NAME || 'APAR'; // Default to 'APAR' sheet
 
     if (!credentials || !spreadsheetId) {
       console.error('Missing Google credentials or sheet ID');
@@ -64,11 +65,12 @@ export async function POST(request: NextRequest) {
       data.ambilFoto ? 'Foto tersedia' : 'Tidak ada foto', // For now, just indicate if photo exists
     ];
 
-    // Append to Google Sheet
+    // Append to Google Sheet (automatically adds to bottom row)
     await sheets.spreadsheets.values.append({
       spreadsheetId,
-      range: 'Sheet1!A:N', // Adjust range as needed
+      range: `${sheetName}!A:N`, // Appends to bottom of specified sheet
       valueInputOption: 'RAW',
+      insertDataOption: 'INSERT_ROWS', // Ensures new rows are inserted
       requestBody: {
         values: [rowData],
       },

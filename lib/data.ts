@@ -19,6 +19,13 @@ export interface APDItem {
   requiresFireFields?: boolean;
 }
 
+export interface User {
+  email: string;
+  password: string;
+  role: 'input' | 'rekap' | 'admin';
+  office: string;
+}
+
 // 12 Lokasi GI/Kantor
 export const locations: Location[] = [
   { id: 'ultg-yogyakarta', name: 'KANTOR ULTG YOGYAKARTA', type: 'kantor' },
@@ -35,6 +42,11 @@ export const locations: Location[] = [
   { id: 'gi-purworejo', name: 'GI PURWOREJO', type: 'gi' },
 ];
 
+// Users untuk login
+export const users: User[] = [
+  { email: 'admin@ultg.co.id', password: 'admin123', role: 'admin', office: 'ultg-yogyakarta' },
+];
+
 // 9 Kategori APD
 export const categories: Category[] = [
   { id: 'apar', name: 'APAR', icon: '🧯' },
@@ -46,6 +58,7 @@ export const categories: Category[] = [
   { id: 'alat-kerja', name: 'ALAT KERJA', icon: '🔧' },
   { id: 'cctv', name: 'CCTV', icon: '📹' },
   { id: 'limbah-b3', name: 'LIMBAH B3', icon: '⚠️' },
+  {id: 'denah', name: 'Denah', icon: '🗺️' },
 ];
 
 // APD Items per kategori
@@ -117,4 +130,8 @@ export function getItemsByCategoryId(categoryId: string) {
 
 export function getItemById(id: string) {
   return apdItems.find(item => item.id === id);
+}
+
+export function getUserByCredentials(email: string, password: string) {
+  return users.find(user => user.email === email && user.password === password);
 }

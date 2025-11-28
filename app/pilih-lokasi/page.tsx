@@ -1,15 +1,20 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { locations } from '@/lib/data';
 
 export default function PilihLokasiPage() {
   const router = useRouter();
+  const [userOffice, setUserOffice] = useState<string | null>(null);
 
   useEffect(() => {
     // Check if user is logged in
     const isLoggedIn = localStorage.getItem('isLoggedIn');
+    const office = localStorage.getItem('userOffice');
+    
+    setUserOffice(office);
+    
     if (!isLoggedIn) {
       router.push('/login');
     }
@@ -35,12 +40,14 @@ export default function PilihLokasiPage() {
             </div>
             <h1 className="text-xl font-bold">PILIH LOKASI GI/KANTOR</h1>
           </div>
-          <button
-            onClick={handleLogout}
-            className="px-4 py-2 bg-red-500 hover:bg-red-600 rounded-lg text-sm font-semibold transition-colors"
-          >
-            Logout
-          </button>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={handleLogout}
+              className="px-4 py-2 bg-red-500 hover:bg-red-600 rounded-lg text-sm font-semibold transition-colors"
+            >
+              Logout
+            </button>
+          </div>
         </div>
       </div>
 

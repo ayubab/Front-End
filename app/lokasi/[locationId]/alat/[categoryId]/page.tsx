@@ -48,7 +48,7 @@ export default function DaftarItemPage() {
     const formData = new FormData(e.target as HTMLFormElement);
 
     try {
-      const response = await fetch('/api/apar', {
+      const response = await fetch(`/api/submit/${categoryId}`, {
         method: 'POST',
         body: formData,
       });
@@ -96,6 +96,9 @@ export default function DaftarItemPage() {
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-4">
+              {/* Hidden category field */}
+              <input type="hidden" name="category" value={categoryId} />
+
               {/* KANTOR/GARDU INDUK */}
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-2">
