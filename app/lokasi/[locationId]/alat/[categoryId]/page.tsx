@@ -322,6 +322,343 @@ export default function DaftarItemPage() {
             </form>
           </div>
         </div>
+      ) : categoryId === 'apat' ? (
+        /* APAT Form */
+        <div className="max-w-4xl mx-auto p-6">
+          <div className="bg-white rounded-2xl shadow-2xl p-6">
+            <div className="mb-6">
+              <h2 className="text-xl font-bold text-gray-800">Input Rekap K3 - APAT</h2>
+              <p className="text-sm text-gray-600 mt-1">Masukkan data APAT untuk {location.name}</p>
+            </div>
+
+            <form onSubmit={handleSubmit} className="space-y-4">
+              {/* Hidden category field */}
+              <input type="hidden" name="category" value={categoryId} />
+
+              {/* GARDU INDUK */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  GARDU INDUK <span className="text-red-500">*</span>
+                </label>
+                <select
+                  name="kantorGarduInduk"
+                  required
+                  defaultValue={locationId}
+                  className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-500 text-gray-900"
+                >
+                  <option value={locationId}>{location.name}</option>
+                </select>
+              </div>
+
+              {/* BAK / DRUM PASIR (buah) */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  BAK / DRUM PASIR (buah) <span className="text-red-500">*</span>
+                </label>
+                <input
+                  name="bakDrumPasir"
+                  type="number"
+                  required
+                  min="0"
+                  placeholder="Masukkan jumlah bak/drum pasir"
+                  className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-500 text-gray-900"
+                />
+              </div>
+
+              {/* BAK / DRUM AIR (buah) */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  BAK / DRUM AIR (buah) <span className="text-red-500">*</span>
+                </label>
+                <input
+                  name="bakDrumAir"
+                  type="number"
+                  required
+                  min="0"
+                  placeholder="Masukkan jumlah bak/drum air"
+                  className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-500 text-gray-900"
+                />
+              </div>
+
+              {/* SEKOP (buah) */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  SEKOP (buah) <span className="text-red-500">*</span>
+                </label>
+                <input
+                  name="sekop"
+                  type="number"
+                  required
+                  min="0"
+                  placeholder="Masukkan jumlah sekop"
+                  className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-500 text-gray-900"
+                />
+              </div>
+
+              {/* EMBER (buah) */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  EMBER (buah) <span className="text-red-500">*</span>
+                </label>
+                <input
+                  name="ember"
+                  type="number"
+                  required
+                  min="0"
+                  placeholder="Masukkan jumlah ember"
+                  className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-500 text-gray-900"
+                />
+              </div>
+
+              {/* KARUNG GONI (buah) */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  KARUNG GONI (buah) <span className="text-red-500">*</span>
+                </label>
+                <input
+                  name="karungGoni"
+                  type="number"
+                  required
+                  min="0"
+                  placeholder="Masukkan jumlah karung goni"
+                  className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-500 text-gray-900"
+                />
+              </div>
+
+              {/* KETERANGAN */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  KETERANGAN
+                </label>
+                <textarea
+                  name="keterangan"
+                  rows={3}
+                  placeholder="Masukkan keterangan tambahan"
+                  className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-500 text-gray-900"
+                ></textarea>
+              </div>
+
+              {/* TANGGAL INSPEKSI */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  TANGGAL INSPEKSI <span className="text-red-500">*</span>
+                </label>
+                <input
+                  name="tanggalInspeksi"
+                  type="date"
+                  required
+                  defaultValue={new Date().toISOString().split('T')[0]}
+                  className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-500 text-gray-900"
+                />
+              </div>
+
+              {/* AMBIL FOTO */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  AMBIL FOTO
+                </label>
+                <input
+                  name="ambilFoto"
+                  type="file"
+                  accept="image/*"
+                  capture="environment"
+                  className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-500 text-gray-900 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-cyan-50 file:text-cyan-700 hover:file:bg-cyan-100"
+                />
+              </div>
+
+              {/* Submit Button */}
+              <div className="pt-4">
+                <button
+                  type="submit"
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-xl transition-colors duration-200 shadow-lg"
+                >
+                  Simpan Data APAT
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      ) : categoryId === 'fire-alarm' ? (
+        /* FIRE ALARM Form */
+        <div className="max-w-4xl mx-auto p-6">
+          <div className="bg-white rounded-2xl shadow-2xl p-6">
+            <div className="mb-6">
+              <h2 className="text-xl font-bold text-gray-800">Input Rekap K3 - FIRE ALARM</h2>
+              <p className="text-sm text-gray-600 mt-1">Masukkan data FIRE ALARM untuk {location.name}</p>
+            </div>
+
+            <form onSubmit={handleSubmit} className="space-y-4">
+              {/* Hidden category field */}
+              <input type="hidden" name="category" value={categoryId} />
+
+              {/* GARDU INDUK */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  GARDU INDUK <span className="text-red-500">*</span>
+                </label>
+                <select
+                  name="kantorGarduInduk"
+                  required
+                  defaultValue={locationId}
+                  className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-500 text-gray-900"
+                >
+                  <option value={locationId}>{location.name}</option>
+                </select>
+              </div>
+
+              {/* JENIS PERALATAN */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  JENIS PERALATAN <span className="text-red-500">*</span>
+                </label>
+                <select
+                  name="jenisPeralatan"
+                  required
+                  className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-500 text-gray-900"
+                >
+                  <option value="">Pilih jenis peralatan</option>
+                  <option value="detektor-asap">DETEKTOR ASAP</option>
+                  <option value="detektor-panas">DETEKTOR PANAS</option>
+                  <option value="panel-kontrol">PANEL KONTROL</option>
+                  <option value="bell-sounder">BELL/SOUNDER</option>
+                </select>
+              </div>
+
+              {/* LOKASI */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  LOKASI <span className="text-red-500">*</span>
+                </label>
+                <input
+                  name="lokasi"
+                  type="text"
+                  required
+                  placeholder="Masukkan lokasi pemasangan"
+                  className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-500 text-gray-900"
+                />
+              </div>
+
+              {/* HEAT (JUML TITIK) */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  HEAT (JUML TITIK) <span className="text-red-500">*</span>
+                </label>
+                <input
+                  name="heatTitik"
+                  type="number"
+                  required
+                  min="0"
+                  placeholder="Masukkan jumlah titik detektor panas"
+                  className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-500 text-gray-900"
+                />
+              </div>
+
+              {/* SMOKE (JUML TITIK) */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  SMOKE (JUML TITIK) <span className="text-red-500">*</span>
+                </label>
+                <input
+                  name="smokeTitik"
+                  type="number"
+                  required
+                  min="0"
+                  placeholder="Masukkan jumlah titik detektor asap"
+                  className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-500 text-gray-900"
+                />
+              </div>
+
+              {/* KONDISI */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  KONDISI <span className="text-red-500">*</span>
+                </label>
+                <select
+                  name="kondisi"
+                  required
+                  className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-500 text-gray-900"
+                >
+                  <option value="">Pilih kondisi</option>
+                  <option value="baik">BAIK</option>
+                  <option value="rusak">RUSAK</option>
+                  <option value="perlu-perbaikan">PERLU PERBAIKAN</option>
+                </select>
+              </div>
+
+              {/* MERK / TYPE */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  MERK / TYPE <span className="text-red-500">*</span>
+                </label>
+                <input
+                  name="merkType"
+                  type="text"
+                  required
+                  placeholder="Masukkan merk dan tipe"
+                  className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-500 text-gray-900"
+                />
+              </div>
+
+              {/* TANGGAL PENGECEKAN */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  TANGGAL PENGECEKAN <span className="text-red-500">*</span>
+                </label>
+                <input
+                  name="tanggalPengecekan"
+                  type="date"
+                  required
+                  className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-500 text-gray-900"
+                />
+              </div>
+
+              {/* LINK LKS / BA ANOMALI */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  LINK LKS / BA ANOMALI
+                </label>
+                <input
+                  name="linkLks"
+                  type="url"
+                  placeholder="Masukkan link LKS atau BA anomali (opsional)"
+                  className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-500 text-gray-900"
+                />
+              </div>
+
+              {/* FOTO */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  FOTO <span className="text-red-500">*</span>
+                </label>
+                <input
+                  name="photo"
+                  type="file"
+                  required
+                  accept="image/*"
+                  capture="environment"
+                  className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-cyan-50 file:text-cyan-700 hover:file:bg-cyan-100"
+                />
+              </div>
+
+              {/* Buttons */}
+              <div className="flex gap-3 pt-4">
+                <button
+                  type="button"
+                  onClick={handleBack}
+                  className="flex-1 px-6 py-3 bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold rounded-xl transition-colors"
+                >
+                  Batal
+                </button>
+                <button
+                  type="submit"
+                  className="flex-1 px-6 py-3 bg-cyan-500 hover:bg-cyan-600 text-white font-semibold rounded-xl transition-colors"
+                >
+                  Simpan
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
       ) : (
         /* Default Item List for Other Categories */
         <div className="max-w-4xl mx-auto p-6">
@@ -356,7 +693,7 @@ export default function DaftarItemPage() {
       )}
 
       {/* Modal Form for Other Categories */}
-      {selectedItem && selectedItemData && categoryId !== 'apar' && (
+      {selectedItem && selectedItemData && categoryId !== 'apar' && categoryId !== 'apat' && categoryId !== 'fire-alarm' && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
             <div className="sticky top-0 bg-cyan-600 text-white p-4 rounded-t-2xl">

@@ -1,6 +1,25 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { google } from 'googleapis';
 
+// Helper function to get sheet ID based on location
+function getSheetIdForLocation(locationId: string): string {
+  const sheetIdMap: { [key: string]: string } = {
+    'ultg-yogyakarta': process.env.GOOGLE_SHEET_ID_ULTG_YOGYAKARTA,
+    'gi-bantul': process.env.GOOGLE_SHEET_ID_GI_BANTUL,
+    'gis-wirobrajan': process.env.GOOGLE_SHEET_ID_GIS_WIROBRAJAN,
+    'gi-kentungan': process.env.GOOGLE_SHEET_ID_GI_KENTUNGAN,
+    'gi-klaten': process.env.GOOGLE_SHEET_ID_GI_KLATEN,
+    'gi-kalasan': process.env.GOOGLE_SHEET_ID_GI_KALASAN,
+    'gi-semanu': process.env.GOOGLE_SHEET_ID_GI_SEMANU,
+    'gi-godean': process.env.GOOGLE_SHEET_ID_GI_GODEAN,
+    'gi-medari': process.env.GOOGLE_SHEET_ID_GI_MEDARI,
+    'gi-wates': process.env.GOOGLE_SHEET_ID_GI_WATES,
+    'gi-purworejo': process.env.GOOGLE_SHEET_ID_GI_PURWOREJO,
+  };
+
+  return sheetIdMap[locationId] || process.env.GOOGLE_SHEET_ID; // Fallback to default
+}
+
 // Helper function to upload file to Google Drive
 async function uploadToDrive(file: File, auth: any): Promise<string | null> {
   try {
@@ -83,22 +102,24 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
 
       case 'apat':
         Object.assign(data, {
-          jenisSelang: formData.get('jenisSelang'),
-          panjang: formData.get('panjang'),
-          diameter: formData.get('diameter'),
-          merk: formData.get('merk'),
-          tahunPembuatan: formData.get('tahunPembuatan'),
+          bakDrumPasir: formData.get('bakDrumPasir'),
+          bakDrumAir: formData.get('bakDrumAir'),
+          sekop: formData.get('sekop'),
+          ember: formData.get('ember'),
+          karungGoni: formData.get('karungGoni'),
           jenis: 'APAT', // Category name
         });
         break;
 
       case 'fire-alarm':
         Object.assign(data, {
-          jenisDetektor: formData.get('jenisDetektor'),
-          zona: formData.get('zona'),
-          merk: formData.get('merk'),
-          tanggalKalibrasi: formData.get('tanggalKalibrasi'),
-          statusBaterai: formData.get('statusBaterai'),
+          jenisPeralatan: formData.get('jenisPeralatan'),
+          heatTitik: formData.get('heatTitik'),
+          smokeTitik: formData.get('smokeTitik'),
+          kondisi: formData.get('kondisi'),
+          merkType: formData.get('merkType'),
+          tanggalPengecekan: formData.get('tanggalPengecekan'),
+          linkLks: formData.get('linkLks'),
           jenis: 'FIRE ALARM', // Category name
         });
         break;
@@ -190,10 +211,11 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
 
     // Google Sheets API setup
     const credentials = JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT_KEY || '{}');
-    const spreadsheetId = process.env.GOOGLE_SHEET_ID;
+    const locationId = data.kantorGarduInduk as string;
+    const spreadsheetId = getSheetIdForLocation(locationId);
 
     if (!credentials || !spreadsheetId) {
-      console.error('Missing Google credentials or sheet ID');
+      console.error('Missing Google credentials or sheet ID for location:', locationId);
       return NextResponse.json(
         { success: false, message: 'Server configuration error' },
         { status: 500 }
@@ -265,35 +287,27 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
         rowData = [
           id,
           (data as any).kantorGarduInduk,
-          (data as any).jenisSelang,
-          (data as any).panjang,
-          (data as any).diameter,
-          (data as any).merk,
-          (data as any).jenis,            // JENIS (category name)
-          (data as any).tahunPembuatan,
-          (data as any).lokasi,
-          (data as any).tanggalInspeksi,
-          (data as any).kondi,
+          (data as any).bakDrumPasir,
+          (data as any).bakDrumAir,
+          (data as any).sekop,
+          (data as any).ember,
+          (data as any).karungGoni,
           (data as any).keterangan,
-          photoFormula
+          (data as any).tanggalInspeksi
         ];
         break;
 
       case 'fire-alarm':
         rowData = [
           id,
-          (data as any).kantorGarduInduk,
-          (data as any).jenisDetektor,
-          (data as any).zona,
-          (data as any).merk,
-          (data as any).jenis,            // JENIS (category name)
-          (data as any).tanggalKalibrasi,
-          (data as any).statusBaterai,
+          (data as any).jenisPeralatan,
           (data as any).lokasi,
-          (data as any).tanggalInspeksi,
-          (data as any).kondi,
-          (data as any).keterangan,
-          photoFormula
+          (data as any).heatTitik,
+          (data as any).smokeTitik,
+          (data as any).kondisi,
+          (data as any).merkType,
+          (data as any).tanggalPengecekan,
+          (data as any).linkLks
         ];
         break;
 
@@ -532,12 +546,10 @@ function getSheetHeaders(sheetName: string): string[] {
       'TANGGAL INSPEKSI', 'BAHAN PEMADAM', 'KELAS KEBAKARAN', 'TANGGAL PENGISIAN', 'KADALUARSA', 'KONDISI', 'KETERANGAN', 'FOTO'
     ],
     'APAT': [
-      'ID', 'KANTOR/GARDU INDUK', 'JENIS SELANG', 'PANJANG', 'DIAMETER', 'MERK', 'JENIS', 'TAHUN PEMBUATAN', 
-      'LOKASI', 'TANGGAL INSPEKSI', 'KONDISI', 'KETERANGAN', 'FOTO'
+      'ID', 'GARDU INDUK', 'BAK / DRUM PASIR (buah)', 'BAK / DRUM AIR (buah)', 'SEKOP (buah)', 'EMBER (buah)', 'KARUNG GONI (buah)', 'KETERANGAN', 'TANGGAL INSPEKSI'
     ],
     'FIRE ALARM': [
-      'ID', 'KANTOR/GARDU INDUK', 'JENIS DETEKTOR', 'ZONA', 'MERK', 'JENIS', 'TANGGAL KALIBRASI', 'STATUS BATERAI', 
-      'LOKASI', 'TANGGAL INSPEKSI', 'KONDISI', 'KETERANGAN', 'FOTO'
+      'NO', 'JENIS PERALATAN', 'LOKASI', 'HEAT(JUML TITIK)', 'SMOKE(JUML TITIK)', 'KONDISI', 'MERK /TYPE', 'TANGGAL PENGECEKAN', 'LINK LKS / BA ANOMALI'
     ],
     'HYDRANT': [
       'ID', 'KANTOR/GARDU INDUK', 'JENIS HYDRANT', 'NOMOR HYDRANT', 'MERK', 'JENIS', 'TANGGAL UJI', 'TEKANAN', 

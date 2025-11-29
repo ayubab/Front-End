@@ -44,7 +44,20 @@ export const locations: Location[] = [
 
 // Users untuk login
 export const users: User[] = [
-  { email: 'admin@ultg.co.id', password: 'admin123', role: 'admin', office: 'ultg-yogyakarta' },
+  {
+    email: process.env.ADMIN_EMAIL || 'admin@ultg.co.id',
+    password: process.env.ADMIN_PASSWORD || 'admin123',
+    role: (process.env.ADMIN_ROLE as 'admin' | 'input' | 'rekap') || 'admin',
+    office: process.env.ADMIN_OFFICE || 'ultg-yogyakarta'
+  },
+  // Additional users can be added here using environment variables
+  // Example:
+  // ...(process.env.USER2_EMAIL ? [{
+  //   email: process.env.USER2_EMAIL,
+  //   password: process.env.USER2_PASSWORD || '',
+  //   role: (process.env.USER2_ROLE as 'admin' | 'input' | 'rekap') || 'input',
+  //   office: process.env.USER2_OFFICE || 'gi-bantul'
+  // }] : [])
 ];
 
 // 9 Kategori APD
