@@ -4,20 +4,20 @@ import { google } from 'googleapis';
 // Helper function to get sheet ID based on location
 function getSheetIdForLocation(locationId: string): string {
   const sheetIdMap: { [key: string]: string } = {
-    'ultg-yogyakarta': process.env.GOOGLE_SHEET_ID_ULTG_YOGYAKARTA,
-    'gi-bantul': process.env.GOOGLE_SHEET_ID_GI_BANTUL,
-    'gis-wirobrajan': process.env.GOOGLE_SHEET_ID_GIS_WIROBRAJAN,
-    'gi-kentungan': process.env.GOOGLE_SHEET_ID_GI_KENTUNGAN,
-    'gi-klaten': process.env.GOOGLE_SHEET_ID_GI_KLATEN,
-    'gi-kalasan': process.env.GOOGLE_SHEET_ID_GI_KALASAN,
-    'gi-semanu': process.env.GOOGLE_SHEET_ID_GI_SEMANU,
-    'gi-godean': process.env.GOOGLE_SHEET_ID_GI_GODEAN,
-    'gi-medari': process.env.GOOGLE_SHEET_ID_GI_MEDARI,
-    'gi-wates': process.env.GOOGLE_SHEET_ID_GI_WATES,
-    'gi-purworejo': process.env.GOOGLE_SHEET_ID_GI_PURWOREJO,
+    'ultg-yogyakarta': process.env.GOOGLE_SHEET_ID_ULTG_YOGYAKARTA || '',
+    'gi-bantul': process.env.GOOGLE_SHEET_ID_GI_BANTUL || '',
+    'gis-wirobrajan': process.env.GOOGLE_SHEET_ID_GIS_WIROBRAJAN || '',
+    'gi-kentungan': process.env.GOOGLE_SHEET_ID_GI_KENTUNGAN || '',
+    'gi-klaten': process.env.GOOGLE_SHEET_ID_GI_KLATEN || '',
+    'gi-kalasan': process.env.GOOGLE_SHEET_ID_GI_KALASAN || '',
+    'gi-semanu': process.env.GOOGLE_SHEET_ID_GI_SEMANU || '',
+    'gi-godean': process.env.GOOGLE_SHEET_ID_GI_GODEAN || '',
+    'gi-medari': process.env.GOOGLE_SHEET_ID_GI_MEDARI || '',
+    'gi-wates': process.env.GOOGLE_SHEET_ID_GI_WATES || '',
+    'gi-purworejo': process.env.GOOGLE_SHEET_ID_GI_PURWOREJO || '',
   };
 
-  return sheetIdMap[locationId] || process.env.GOOGLE_SHEET_ID; // Fallback to default
+  return sheetIdMap[locationId] || process.env.GOOGLE_SHEET_ID || '';
 }
 
 // Helper function to upload file to Google Drive
