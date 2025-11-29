@@ -523,3 +523,51 @@ async function ensureSheetExists(sheets: any, spreadsheetId: string, sheetName: 
     throw error;
   }
 }
+
+// Function to get headers for each sheet type
+function getSheetHeaders(sheetName: string): string[] {
+  const headerMapping: { [key: string]: string[] } = {
+    'APAR': [
+      'ID', 'KANTOR/GARDU INDUK', 'NO. APAR', 'LOKASI', 'MERK', 'TIPE', 'KAPASITAS (KG)', 'JENIS', 
+      'TANGGAL INSPEKSI', 'BAHAN PEMADAM', 'KELAS KEBAKARAN', 'TANGGAL PENGISIAN', 'KADALUARSA', 'KONDISI', 'KETERANGAN', 'FOTO'
+    ],
+    'APAT': [
+      'ID', 'KANTOR/GARDU INDUK', 'JENIS SELANG', 'PANJANG', 'DIAMETER', 'MERK', 'JENIS', 'TAHUN PEMBUATAN', 
+      'LOKASI', 'TANGGAL INSPEKSI', 'KONDISI', 'KETERANGAN', 'FOTO'
+    ],
+    'FIRE ALARM': [
+      'ID', 'KANTOR/GARDU INDUK', 'JENIS DETEKTOR', 'ZONA', 'MERK', 'JENIS', 'TANGGAL KALIBRASI', 'STATUS BATERAI', 
+      'LOKASI', 'TANGGAL INSPEKSI', 'KONDISI', 'KETERANGAN', 'FOTO'
+    ],
+    'HYDRANT': [
+      'ID', 'KANTOR/GARDU INDUK', 'JENIS HYDRANT', 'NOMOR HYDRANT', 'MERK', 'JENIS', 'TANGGAL UJI', 'TEKANAN', 
+      'LOKASI', 'TANGGAL INSPEKSI', 'KONDISI', 'KETERANGAN', 'FOTO'
+    ],
+    'APD': [
+      'ID', 'KANTOR/GARDU INDUK', 'JENIS APD', 'UKURAN', 'MERK', 'JENIS', 'TANGGAL KADALUARSA', 'JUMLAH', 
+      'LOKASI', 'TANGGAL INSPEKSI', 'KONDISI', 'KETERANGAN', 'FOTO'
+    ],
+    'STD HAR': [
+      'ID', 'KANTOR/GARDU INDUK', 'JENIS PERALATAN', 'NOMOR SERI', 'MERK', 'JENIS', 'TANGGAL KALIBRASI', 'TEGANGAN', 
+      'LOKASI', 'TANGGAL INSPEKSI', 'KONDISI', 'KETERANGAN', 'FOTO'
+    ],
+    'ALAT KERJA': [
+      'ID', 'KANTOR/GARDU INDUK', 'JENIS ALAT', 'NOMOR SERI', 'MERK', 'JENIS', 'TANGGAL KALIBRASI', 'KAPASITAS', 
+      'LOKASI', 'TANGGAL INSPEKSI', 'KONDISI', 'KETERANGAN', 'FOTO'
+    ],
+    'CCTV': [
+      'ID', 'KANTOR/GARDU INDUK', 'JENIS KAMERA', 'LOKASI PEMASANGAN', 'MERK', 'JENIS', 'RESOLUSI', 'STATUS REKAMAN', 
+      'LOKASI', 'TANGGAL INSPEKSI', 'KONDISI', 'KETERANGAN', 'FOTO'
+    ],
+    'LIMBAH B3': [
+      'ID', 'KANTOR/GARDU INDUK', 'JENIS LIMBAH', 'JUMLAH', 'SATUAN', 'JENIS', 'TANGGAL PENIMBUNAN', 'STATUS PENYIMPANAN', 
+      'LOKASI', 'TANGGAL INSPEKSI', 'KONDISI', 'KETERANGAN', 'FOTO'
+    ],
+    'DENAH': [
+      'ID', 'KANTOR/GARDU INDUK', 'JENIS DENAH', 'SKALA', 'JENIS', 'TANGGAL UPDATE', 'STATUS KELENGKAPAN', 
+      'LOKASI', 'TANGGAL INSPEKSI', 'KONDISI', 'KETERANGAN', 'FOTO'
+    ],
+  };
+
+  return headerMapping[sheetName] || [];
+}
