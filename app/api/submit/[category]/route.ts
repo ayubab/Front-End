@@ -118,6 +118,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
           smokeTitik: formData.get('smokeTitik'),
           kondisi: formData.get('kondisi'),
           merkType: formData.get('merkType'),
+          kondisi2: formData.get('kondisi2'), // Second kondisi field
           tanggalPengecekan: formData.get('tanggalPengecekan'),
           linkLks: formData.get('linkLks'),
           jenis: 'FIRE ALARM', // Category name
@@ -306,6 +307,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
           (data as any).smokeTitik,
           (data as any).kondisi,
           (data as any).merkType,
+          (data as any).kondisi2, // Second kondisi field
           (data as any).tanggalPengecekan,
           (data as any).linkLks
         ];
@@ -549,7 +551,7 @@ function getSheetHeaders(sheetName: string): string[] {
       'ID', 'GARDU INDUK', 'BAK / DRUM PASIR (buah)', 'BAK / DRUM AIR (buah)', 'SEKOP (buah)', 'EMBER (buah)', 'KARUNG GONI (buah)', 'KETERANGAN', 'TANGGAL INSPEKSI'
     ],
     'FIRE ALARM': [
-      'NO', 'JENIS PERALATAN', 'LOKASI', 'HEAT(JUML TITIK)', 'SMOKE(JUML TITIK)', 'KONDISI', 'MERK /TYPE', 'TANGGAL PENGECEKAN', 'LINK LKS / BA ANOMALI'
+      'NO', 'JENIS PERALATAN', 'LOKASI', 'HEAT(JUML TITIK)', 'SMOKE(JUML TITIK)', 'KONDISI', 'MERK /TYPE', 'KONDISI', 'TANGGAL PENGECEKAN', 'LINK LKS / BA ANOMALI'
     ],
     'HYDRANT': [
       'ID', 'KANTOR/GARDU INDUK', 'JENIS HYDRANT', 'NOMOR HYDRANT', 'MERK', 'JENIS', 'TANGGAL UJI', 'TEKANAN', 

@@ -599,6 +599,23 @@ export default function DaftarItemPage() {
                 />
               </div>
 
+              {/* KONDISI (Second kondisi field) */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  KONDISI <span className="text-red-500">*</span>
+                </label>
+                <select
+                  name="kondisi2"
+                  required
+                  className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-500 text-gray-900"
+                >
+                  <option value="">Pilih kondisi</option>
+                  <option value="baik">BAIK</option>
+                  <option value="rusak">RUSAK</option>
+                  <option value="perlu-perbaikan">PERLU PERBAIKAN</option>
+                </select>
+              </div>
+
               {/* TANGGAL PENGECEKAN */}
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-2">
@@ -628,12 +645,11 @@ export default function DaftarItemPage() {
               {/* FOTO */}
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  FOTO <span className="text-red-500">*</span>
+                  FOTO
                 </label>
                 <input
                   name="photo"
                   type="file"
-                  required
                   accept="image/*"
                   capture="environment"
                   className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-cyan-50 file:text-cyan-700 hover:file:bg-cyan-100"
