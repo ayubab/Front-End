@@ -46,9 +46,9 @@ async function uploadToDrive(file: File, auth: any): Promise<string | null> {
   }
 }
 
-export async function POST(request: NextRequest, { params }: { params: { category: string } }) {
+export async function POST(request: NextRequest, { params }: { params: Promise<{ category: string }> }) {
   try {
-    const { category: urlCategory } = params;
+    const { category: urlCategory } = await params;
     const formData = await request.formData();
 
     // Get category from form data (more reliable than URL)

@@ -227,7 +227,7 @@ export default function DaftarItemPage() {
                   type="text"
                   required
                   placeholder="Contoh: A, B, C, D"
-                  className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                  className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-500 text-gray-900"
                 />
               </div>
 
@@ -240,7 +240,7 @@ export default function DaftarItemPage() {
                   name="tanggalPengisian"
                   type="date"
                   required
-                  className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                  className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-500 text-gray-900"
                 />
               </div>
 
@@ -253,7 +253,7 @@ export default function DaftarItemPage() {
                   name="kadaluarsa"
                   type="date"
                   required
-                  className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                  className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-500 text-gray-900"
                 />
               </div>
 
@@ -265,7 +265,7 @@ export default function DaftarItemPage() {
                 <select
                   name="kondi"
                   required
-                  className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                  className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-500 text-gray-900"
                 >
                   <option value="">Pilih kondisi</option>
                   <option value="normal">NORMAL</option>
@@ -285,7 +285,7 @@ export default function DaftarItemPage() {
                   required
                   rows={4}
                   placeholder="Masukkan keterangan"
-                  className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-500 resize-none"
+                  className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-500 resize-none text-gray-900"
                 />
               </div>
 
@@ -397,7 +397,7 @@ export default function DaftarItemPage() {
                   type="text"
                   required
                   placeholder="Masukkan merk"
-                  className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                  className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-500 text-gray-900"
                 />
               </div>
 
@@ -410,7 +410,7 @@ export default function DaftarItemPage() {
                   type="text"
                   required
                   placeholder="Masukkan tipe"
-                  className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                  className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-500 text-gray-900"
                 />
               </div>
 
@@ -423,7 +423,7 @@ export default function DaftarItemPage() {
                   type="text"
                   required
                   placeholder="Masukkan kapasitas"
-                  className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                  className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-500 text-gray-900"
                 />
               </div>
 
@@ -436,7 +436,7 @@ export default function DaftarItemPage() {
                   type="text"
                   required
                   placeholder="Masukkan jenis"
-                  className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                  className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-500 text-gray-900"
                 />
               </div>
 
@@ -448,7 +448,7 @@ export default function DaftarItemPage() {
                 <select
                   required
                   defaultValue="2025"
-                  className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                  className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-500 text-gray-900"
                 >
                   <option value="2025">2025</option>
                   <option value="2024">2024</option>
@@ -475,7 +475,7 @@ export default function DaftarItemPage() {
                       <input
                         type="text"
                         placeholder="Contoh: Powder, CO2, Foam"
-                        className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                        className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-500 text-gray-900"
                       />
                     </div>
 
@@ -503,7 +503,7 @@ export default function DaftarItemPage() {
                   type="date"
                   required
                   defaultValue={new Date().toISOString().split('T')[0]}
-                  className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                  className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-500 text-gray-900"
                 />
               </div>
 
@@ -515,7 +515,7 @@ export default function DaftarItemPage() {
                 <input
                   type="date"
                   required
-                  className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                  className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-500 text-gray-900"
                 />
               </div>
 
@@ -526,7 +526,7 @@ export default function DaftarItemPage() {
                 </label>
                 <select
                   required
-                  className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                  className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-500 text-gray-900"
                 >
                   <option value="">Pilih kondisi</option>
                   <option value="baik">Baik</option>
@@ -544,7 +544,7 @@ export default function DaftarItemPage() {
                   required
                   rows={4}
                   placeholder="Masukkan keterangan"
-                  className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-500 resize-none"
+                  className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-500 resize-none text-gray-900"
                 />
               </div>
 

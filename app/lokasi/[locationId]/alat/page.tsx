@@ -157,7 +157,7 @@ export default function PilihAlatPage() {
                 </label>
                 <input
                   type="date"
-                  className="px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                  className="px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-500 text-gray-900"
                 />
               </div>
 
@@ -167,7 +167,7 @@ export default function PilihAlatPage() {
                 </label>
                 <input
                   type="date"
-                  className="px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                  className="px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-500 text-gray-900"
                 />
               </div>
             </div>
