@@ -432,6 +432,9 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     // Determine sheet name based on category
     const sheetName = getSheetName(category);
 
+    // Check if sheet exists, create it if not
+    await ensureSheetExists(sheets, spreadsheetId, sheetName);
+
     // Append to Google Sheet (automatically adds to bottom row, starting from column A with ID)
     await sheets.spreadsheets.values.append({
       spreadsheetId,
@@ -473,4 +476,50 @@ function getSheetName(category: string): string {
   };
 
   return sheetMapping[category] || category.toUpperCase();
+}
+
+// Function to ensure a sheet exists, create it if not
+async function ensureSheetExists(sheets: any, spreadsheetId: string, sheetName: string) {
+  try {
+    // Get spreadsheet metadata to check existing sheets
+    const spreadsheet = await sheets.spreadsheets.get({
+      spreadsheetId,
+    });
+
+    const existingSheets = spreadsheet.data.sheets.map((sheet: any) => sheet.properties.title);
+    
+    if (!existingSheets.includes(sheetName)) {
+      // Create the sheet if it doesn't exist
+      await sheets.spreadsheets.batchUpdate({
+        spreadsheetId,
+        requestBody: {
+          requests: [{
+            addSheet: {
+              properties: {
+                title: sheetName,
+              },
+            },
+          }],
+        },
+      });
+      console.log(`Created new sheet: ${sheetName}`);
+
+      // Add headers to the new sheet
+      const headers = getSheetHeaders(sheetName);
+      if (headers.length > 0) {
+        await sheets.spreadsheets.values.update({
+          spreadsheetId,
+          range: `${sheetName}!A1:${String.fromCharCode(65 + headers.length - 1)}1`,
+          valueInputOption: 'RAW',
+          requestBody: {
+            values: [headers],
+          },
+        });
+        console.log(`Added headers to sheet: ${sheetName}`);
+      }
+    }
+  } catch (error) {
+    console.error(`Error ensuring sheet exists: ${sheetName}`, error);
+    throw error;
+  }
 }
