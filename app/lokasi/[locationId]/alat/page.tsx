@@ -45,6 +45,8 @@ export default function PilihAlatPage() {
       router.push(`/lokasi/${locationId}/alat/apd-std`);
     } else if (categoryId === 'alat-kerja') {
       router.push(`/lokasi/${locationId}/alat/alat-kerja`);
+    } else if (categoryId === 'limbah-k3') {
+      router.push(`/lokasi/${locationId}/alat/limbah-k3`);
     } else {
       router.push(`/lokasi/${locationId}/alat/${categoryId}`);
     }
