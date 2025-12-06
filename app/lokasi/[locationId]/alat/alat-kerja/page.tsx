@@ -79,7 +79,7 @@ export default function AlatKerjaPage() {
   };
 
   const createColumnEditHandlers = (
-    column: 'jumlah' | 'merk' | 'tahun' | 'kondisi' | 'keterangan',
+    column: 'jumlah' | 'merk' | 'tahunPerolehan' | 'kondisi' | 'keterangan',
     setEditing: (val: boolean) => void,
     setEditedData: (data: {[key: number]: string}) => void
   ) => {
@@ -120,7 +120,7 @@ export default function AlatKerjaPage() {
             const columnNames = {
               jumlah: 'Jumlah',
               merk: 'Merk/Type',
-              tahun: 'Tahun Perolehan',
+              tahunPerolehan: 'Tahun Perolehan',
               kondisi: 'Kondisi',
               keterangan: 'Keterangan'
             };
@@ -140,7 +140,7 @@ export default function AlatKerjaPage() {
 
   const jumlahHandlers = createColumnEditHandlers('jumlah', setEditingJumlah, setEditedJumlah);
   const merkHandlers = createColumnEditHandlers('merk', setEditingMerk, setEditedMerk);
-  const tahunHandlers = createColumnEditHandlers('tahun', setEditingTahun, setEditedTahun);
+  const tahunHandlers = createColumnEditHandlers('tahunPerolehan', setEditingTahun, setEditedTahun);
   const kondisiHandlers = createColumnEditHandlers('kondisi', setEditingKondisi, setEditedKondisi);
   const keteranganHandlers = createColumnEditHandlers('keterangan', setEditingKeterangan, setEditedKeterangan);
 
