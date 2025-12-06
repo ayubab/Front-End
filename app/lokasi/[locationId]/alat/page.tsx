@@ -43,6 +43,8 @@ export default function PilihAlatPage() {
       router.push(`/lokasi/${locationId}/alat/apd`);
     } else if (categoryId === 'apd-std') {
       router.push(`/lokasi/${locationId}/alat/apd-std`);
+    } else if (categoryId === 'alat-kerja') {
+      router.push(`/lokasi/${locationId}/alat/alat-kerja`);
     } else {
       router.push(`/lokasi/${locationId}/alat/${categoryId}`);
     }
