@@ -5,6 +5,7 @@ import { NextResponse } from 'next/server';
 export async function GET() {
   // Map of location IDs to their Google Sheet IDs
   const sheetIds: { [key: string]: string } = {
+    'rekap-all': process.env.GOOGLE_SHEET_ID_REKAP_ALL || '',
     'ultg-yogyakarta': process.env.GOOGLE_SHEET_ID_ULTG_YOGYAKARTA || '',
     'gi-bantul': process.env.GOOGLE_SHEET_ID_GI_BANTUL || '',
     'gis-wirobrajan': process.env.GOOGLE_SHEET_ID_GIS_WIROBRAJAN || '',

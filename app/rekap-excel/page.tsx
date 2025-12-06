@@ -45,6 +45,13 @@ export default function RekapExcelPage() {
     router.push('/pilih-lokasi');
   };
 
+  // Special entry for "All Locations Rekap"
+  const rekapAllLocation = {
+    id: 'rekap-all',
+    name: '📊 REKAP SEMUA LOKASI',
+    label: 'REKAP ALL'
+  };
+
   // Google Sheets embed URLs using fetched sheet IDs
   const getSheetEmbedUrl = (locationId: string) => {
     const sheetId = sheetIds[locationId];
@@ -95,6 +102,18 @@ export default function RekapExcelPage() {
           </div>
           
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+            {/* Rekap All Button */}
+            <button
+              onClick={() => setSelectedLocation('rekap-all')}
+              className={`px-4 py-3 rounded-lg font-semibold transition-all text-sm ${
+                selectedLocation === 'rekap-all'
+                  ? 'bg-purple-600 text-white shadow-md'
+                  : 'bg-purple-100 text-purple-700 hover:bg-purple-200'
+              }`}
+            >
+              {rekapAllLocation.name}
+            </button>
+            
             <button
               onClick={() => setSelectedLocation('all')}
               className={`px-4 py-3 rounded-lg font-semibold transition-all text-sm ${
@@ -172,6 +191,49 @@ export default function RekapExcelPage() {
                   <li>• Anda dapat melihat, mengedit, dan mengelola data dari semua lokasi</li>
                   <li>• Akses ini hanya tersedia untuk Admin ULTG Yogyakarta</li>
                 </ul>
+              </div>
+            </div>
+          ) : selectedLocation === 'rekap-all' ? (
+            <div>
+              <div className="mb-4">
+                <h2 className="text-xl font-bold text-purple-900">
+                  {rekapAllLocation.name}
+                </h2>
+                <p className="text-sm text-purple-700">
+                  Rekap semua data dari semua lokasi GI
+                </p>
+              </div>
+
+              {getSheetEmbedUrl(selectedLocation) ? (
+                <div className="relative w-full" style={{ height: '70vh', minHeight: '500px' }}>
+                  <iframe
+                    src={getSheetEmbedUrl(selectedLocation)}
+                    className="w-full h-full rounded-lg border-2 border-purple-300"
+                    style={{ border: 'none' }}
+                    title="Rekap Semua Lokasi"
+                  />
+                </div>
+              ) : (
+                <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-8 text-center">
+                  <div className="text-5xl mb-3">⚠️</div>
+                  <h3 className="font-bold text-yellow-900 mb-2">
+                    Sheet ID Belum Dikonfigurasi
+                  </h3>
+                  <p className="text-sm text-yellow-800">
+                    Google Sheet ID untuk rekap semua lokasi belum diatur di environment variables.
+                  </p>
+                </div>
+              )}
+
+              <div className="mt-4 flex gap-3">
+                <a
+                  href={getSheetEmbedUrl(selectedLocation).replace('/edit?usp=sharing&rm=minimal&widget=true&chrome=false', '/edit')}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white font-semibold rounded-lg transition-colors inline-flex items-center gap-2"
+                >
+                  <span>🔗</span> Buka di Google Sheets
+                </a>
               </div>
             </div>
           ) : (
