@@ -43,7 +43,7 @@ export default function CCTVPage() {
   const locationId = params.locationId as string;
 
   const [dvrData, setDvrData] = useState<DVRData[]>([]);
-  const [cameraData, setCameraData] = useState<DVRData[]>([]);
+  const [cameraData, setCameraData] = useState<CameraData[]>([]);
   const [monitorData, setMonitorData] = useState<MonitorData[]>([]);
   const [loading, setLoading] = useState(true);
 

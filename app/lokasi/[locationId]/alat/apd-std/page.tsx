@@ -81,7 +81,7 @@ export default function APDStdPage() {
   };
 
   const createColumnEditHandlers = (
-    column: 'gis' | 'baik' | 'rusak' | 'merk' | 'tahun' | 'keterangan',
+    column: 'gis' | 'baik' | 'rusak' | 'merk' | 'tahunPerolehan' | 'keterangan',
     setEditing: (val: boolean) => void,
     setEditedData: (data: {[key: number]: string}) => void
   ) => {
@@ -124,7 +124,7 @@ export default function APDStdPage() {
               baik: 'BAIK',
               rusak: 'RUSAK/KADALUARSA',
               merk: 'MERK/TYPE',
-              tahun: 'TAHUN PEROLEHAN',
+              tahunPerolehan: 'TAHUN PEROLEHAN',
               keterangan: 'KETERANGAN'
             };
             alert(`${columnNames[column]} berhasil diperbarui`);
@@ -145,7 +145,7 @@ export default function APDStdPage() {
   const baikHandlers = createColumnEditHandlers('baik', setEditingBaik, setEditedBaik);
   const rusakHandlers = createColumnEditHandlers('rusak', setEditingRusak, setEditedRusak);
   const merkHandlers = createColumnEditHandlers('merk', setEditingMerk, setEditedMerk);
-  const tahunHandlers = createColumnEditHandlers('tahun', setEditingTahun, setEditedTahun);
+  const tahunHandlers = createColumnEditHandlers('tahunPerolehan', setEditingTahun, setEditedTahun);
   const keteranganHandlers = createColumnEditHandlers('keterangan', setEditingKeterangan, setEditedKeterangan);
 
   if (!location) {
