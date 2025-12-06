@@ -231,7 +231,8 @@ export async function GET(request: NextRequest) {
         nozzleKondisi: nozzleItem.kondisi,
         tanggalPengecekan: '',
         keterangan: '',
-        linkLks: ''
+        linkLks: '',
+        tanggal: ''
       });
     }
 
@@ -360,7 +361,7 @@ export async function POST(request: NextRequest) {
 export async function PUT(request: NextRequest) {
   try {
     const body = await request.json();
-    const { locationId, rowIndex, boxKondisi, pilarKondisi, nozzleKondisi, tanggalPengecekan, keterangan, linkLks } = body;
+    const { locationId, rowIndex, boxKondisi, pilarKondisi, nozzleKondisi, tanggalPengecekan, keterangan, linkLks, tanggal } = body;
 
     if (!locationId || !rowIndex) {
       return NextResponse.json(

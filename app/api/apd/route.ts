@@ -62,10 +62,10 @@ export async function GET(request: NextRequest) {
     const authClient = await getAuthClient();
     const sheets = google.sheets({ version: 'v4', auth: authClient as any });
 
-    // Fetch headers from row 4 (A4:H4)
+    // Fetch headers from row 4 (A4:I4)
     const headersResponse = await sheets.spreadsheets.values.get({
       spreadsheetId: SHEET_ID,
-      range: 'APD!A4:H4',
+      range: 'APD!A4:I4',
     });
 
     const headers = headersResponse.data.values?.[0] || [];
@@ -73,7 +73,7 @@ export async function GET(request: NextRequest) {
     // Create field metadata from headers
     const fieldMetadata: { [key: string]: string[] | null } = {};
     headers.forEach((header, index) => {
-      const columnName = ['no', 'jenisAPD', 'jumlahMinimal', 'gap', 'jumlah', 'merk', 'kondisi', 'keterangan'][index];
+      const columnName = ['no', 'jenisAPD', 'jumlahMinimal', 'gap', 'jumlah', 'merk', 'kondisi', 'keterangan', 'tanggal'][index];
       if (columnName && columnName !== 'gap') {
         const choices = parseChoices(header);
         if (choices) {
@@ -82,10 +82,10 @@ export async function GET(request: NextRequest) {
       }
     });
 
-    // Fetch all data starting from row 6 (A6:H100)
+    // Fetch all data starting from row 6 (A6:I100)
     const dataResponse = await sheets.spreadsheets.values.get({
       spreadsheetId: SHEET_ID,
-      range: 'APD!A6:H100',
+      range: 'APD!A6:I100',
     });
 
     const rows = dataResponse.data.values || [];
@@ -93,7 +93,7 @@ export async function GET(request: NextRequest) {
 
     rows.forEach((row, index) => {
       const rowIndex = index + 6; // Actual row number in sheet
-      const [no, jenisAPD, jumlahMinimal, gap, jumlah, merk, kondisi, keterangan] = row;
+      const [no, jenisAPD, jumlahMinimal, gap, jumlah, merk, kondisi, keterangan, tanggal] = row;
 
       // Category rows have empty "no" but have jenisAPD
       const isCategory = !no && jenisAPD;
@@ -107,6 +107,7 @@ export async function GET(request: NextRequest) {
         merk: merk || '',
         kondisi: kondisi || '',
         keterangan: keterangan || '',
+        tanggal: tanggal || '',
         isCategory,
       });
     });

@@ -56,7 +56,7 @@ export async function PUT(request: NextRequest) {
     const batchData: any[] = [];
 
     for (const update of updates) {
-      const { rowIndex, jumlah, merk, kondisi, keterangan } = update;
+      const { rowIndex, jumlah, merk, kondisi, keterangan, tanggal } = update;
 
       if (!rowIndex) continue;
 
@@ -89,6 +89,14 @@ export async function PUT(request: NextRequest) {
         batchData.push({
           range: `APD!H${rowIndex}`,
           values: [[keterangan]],
+        });
+      }
+
+      // Update Tanggal (column I)
+      if (tanggal !== undefined) {
+        batchData.push({
+          range: `APD!I${rowIndex}`,
+          values: [[tanggal]],
         });
       }
     }

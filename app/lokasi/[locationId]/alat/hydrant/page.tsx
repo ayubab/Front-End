@@ -31,6 +31,7 @@ interface HydrantItem {
   tanggalPengecekan: string;
   keterangan: string;
   linkLks: string;
+  tanggal: string;
 }
 
 interface FieldMetadata {
@@ -59,6 +60,7 @@ export default function HydrantPage() {
   const [editedBoxData, setEditedBoxData] = useState<{[rowIndex: number]: string}>({});
   const [editedPilarData, setEditedPilarData] = useState<{[rowIndex: number]: string}>({});
   const [editedNozzleData, setEditedNozzleData] = useState<{[rowIndex: number]: string}>({});
+  const [globalTanggal, setGlobalTanggal] = useState<string>('');
 
   useEffect(() => {
     const isLoggedIn = localStorage.getItem('isLoggedIn');
@@ -66,6 +68,9 @@ export default function HydrantPage() {
       router.push('/login');
     } else {
       fetchHydrantData();
+      // Set today's date as default
+      const today = new Date().toISOString().split('T')[0];
+      setGlobalTanggal(today);
     }
   }, [router, locationId]);
 
@@ -284,6 +289,7 @@ export default function HydrantPage() {
       tanggalPengecekan: item.tanggalPengecekan,
       keterangan: item.keterangan,
       linkLks: item.linkLks,
+      tanggal: globalTanggal || item.tanggal || new Date().toISOString().split('T')[0],
     });
   };
 
@@ -410,6 +416,31 @@ export default function HydrantPage() {
               <p className="text-sm text-gray-600 mt-1">
                 Total: {hydrantData.length} item
               </p>
+            </div>
+
+            {/* Global Tanggal Section */}
+            <div className="p-6 bg-gradient-to-r from-cyan-50 to-blue-50 border-b border-cyan-200">
+              <div className="flex items-center gap-4">
+                <div className="flex-shrink-0">
+                  <div className="w-12 h-12 bg-cyan-500 rounded-full flex items-center justify-center">
+                    <span className="text-2xl">📅</span>
+                  </div>
+                </div>
+                <div className="flex-1">
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Tanggal Pengecekan Global
+                  </label>
+                  <input
+                    type="date"
+                    value={globalTanggal}
+                    onChange={(e) => setGlobalTanggal(e.target.value)}
+                    className="w-full max-w-xs px-4 py-2 rounded-lg border border-cyan-300 focus:outline-none focus:ring-2 focus:ring-cyan-500 text-gray-900 bg-white shadow-sm"
+                  />
+                  <p className="text-xs text-gray-600 mt-1">
+                    💡 Tanggal ini akan otomatis terisi saat Anda membuka form update
+                  </p>
+                </div>
+              </div>
             </div>
 
             {/* Pump Information Section */}
@@ -1068,6 +1099,19 @@ export default function HydrantPage() {
                   value={editedData.linkLks || ''}
                   onChange={(e) => setEditedData({ ...editedData, linkLks: e.target.value })}
                   placeholder="Masukkan link (opsional)"
+                  className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-500 text-gray-900"
+                />
+              </div>
+
+              {/* Tanggal */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  Tanggal
+                </label>
+                <input
+                  type="date"
+                  value={editedData.tanggal || ''}
+                  onChange={(e) => setEditedData({ ...editedData, tanggal: e.target.value })}
                   className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-500 text-gray-900"
                 />
               </div>

@@ -13,6 +13,7 @@ interface APDItem {
   merk: string;
   kondisi: string;
   keterangan: string;
+  tanggal: string;
   isCategory: boolean;
 }
 
@@ -34,10 +35,13 @@ export default function APDPage() {
   const [editingMerk, setEditingMerk] = useState(false);
   const [editingKondisi, setEditingKondisi] = useState(false);
   const [editingKeterangan, setEditingKeterangan] = useState(false);
+  const [editingTanggal, setEditingTanggal] = useState(false);
   const [editedJumlah, setEditedJumlah] = useState<{[rowIndex: number]: string}>({});
   const [editedMerk, setEditedMerk] = useState<{[rowIndex: number]: string}>({});
   const [editedKondisi, setEditedKondisi] = useState<{[rowIndex: number]: string}>({});
   const [editedKeterangan, setEditedKeterangan] = useState<{[rowIndex: number]: string}>({});
+  const [editedTanggal, setEditedTanggal] = useState<{[rowIndex: number]: string}>({});
+  const [globalTanggal, setGlobalTanggal] = useState<string>('');
 
   useEffect(() => {
     const isLoggedIn = localStorage.getItem('isLoggedIn');
@@ -45,6 +49,9 @@ export default function APDPage() {
       router.push('/login');
     } else {
       fetchAPDData();
+      // Set today's date as default
+      const today = new Date().toISOString().split('T')[0];
+      setGlobalTanggal(today);
     }
   }, [router, locationId]);
 
@@ -136,6 +143,23 @@ export default function APDPage() {
   const handleCancelKeterangan = () => {
     setEditingKeterangan(false);
     setEditedKeterangan({});
+  };
+
+  const handleEditTanggal = () => {
+    setEditingTanggal(true);
+    const initialData: {[rowIndex: number]: string} = {};
+    apdData.forEach(item => {
+      if (!item.isCategory) {
+        // Pre-fill with globalTanggal if item.tanggal is empty
+        initialData[item.rowIndex] = item.tanggal || globalTanggal;
+      }
+    });
+    setEditedTanggal(initialData);
+  };
+
+  const handleCancelTanggal = () => {
+    setEditingTanggal(false);
+    setEditedTanggal({});
   };
 
   const handleSaveJumlah = async () => {
@@ -231,6 +255,37 @@ export default function APDPage() {
     }
   };
 
+  const handleSaveTanggal = async () => {
+    setUpdating(true);
+    try {
+      const updates = Object.entries(editedTanggal).map(([rowIndex, tanggal]) => ({
+        rowIndex: parseInt(rowIndex),
+        tanggal,
+      }));
+
+      const response = await fetch('/api/apd/bulk', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ locationId, updates }),
+      });
+
+      const result = await response.json();
+      if (result.success) {
+        setEditingTanggal(false);
+        setEditedTanggal({});
+        fetchAPDData();
+        alert('Tanggal berhasil diperbarui');
+      } else {
+        alert('Gagal memperbarui Tanggal');
+      }
+    } catch (error) {
+      console.error('Error updating tanggal:', error);
+      alert('Terjadi kesalahan saat memperbarui data');
+    } finally {
+      setUpdating(false);
+    }
+  };
+
   const handleSaveKeterangan = async () => {
     setUpdating(true);
     try {
@@ -299,6 +354,29 @@ export default function APDPage() {
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto p-6">
+        {/* Global Tanggal Card */}
+        <div className="bg-white rounded-xl shadow-lg p-4 mb-6">
+          <div className="flex items-center gap-4">
+            <div className="w-10 h-10 bg-cyan-500 rounded-full flex items-center justify-center flex-shrink-0">
+              <span className="text-2xl">📅</span>
+            </div>
+            <div className="flex-1">
+              <label className="block text-sm font-semibold text-gray-700 mb-1">
+                Tanggal Pengecekan Global
+              </label>
+              <input
+                type="date"
+                value={globalTanggal}
+                onChange={(e) => setGlobalTanggal(e.target.value)}
+                className="w-full max-w-xs px-3 py-2 rounded-lg border border-cyan-300 focus:outline-none focus:ring-2 focus:ring-cyan-500 text-gray-900 bg-white shadow-sm"
+              />
+              <p className="text-xs text-gray-500 mt-1">
+                💡 Klik Edit pada kolom Tanggal untuk mengisi semua baris dengan tanggal ini
+              </p>
+            </div>
+          </div>
+        </div>
+
         <div className="bg-white rounded-xl shadow-xl overflow-hidden">
           {loading ? (
             <div className="p-12 text-center">
@@ -433,13 +511,43 @@ export default function APDPage() {
                         )}
                       </div>
                     </th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase">
+                      <div className="flex items-center justify-between gap-2">
+                        <span>Tanggal</span>
+                        {editingTanggal ? (
+                          <div className="flex gap-1">
+                            <button
+                              onClick={handleSaveTanggal}
+                              disabled={updating}
+                              className="px-2 py-1 bg-green-600 text-white text-xs rounded hover:bg-green-700 disabled:opacity-50"
+                            >
+                              ✓
+                            </button>
+                            <button
+                              onClick={handleCancelTanggal}
+                              disabled={updating}
+                              className="px-2 py-1 bg-gray-400 text-white text-xs rounded hover:bg-gray-500 disabled:opacity-50"
+                            >
+                              ✕
+                            </button>
+                          </div>
+                        ) : (
+                          <button
+                            onClick={handleEditTanggal}
+                            className="px-2 py-1 bg-cyan-600 text-white text-xs rounded hover:bg-cyan-700"
+                          >
+                            Edit
+                          </button>
+                        )}
+                      </div>
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200">
                   {apdData.map((item, index) => (
                     item.isCategory ? (
                       <tr key={index} className="bg-cyan-50">
-                        <td colSpan={7} className="px-4 py-3 text-sm font-bold text-cyan-900">
+                        <td colSpan={8} className="px-4 py-3 text-sm font-bold text-cyan-900">
                           {item.jenisAPD}
                         </td>
                       </tr>
@@ -514,6 +622,18 @@ export default function APDPage() {
                             />
                           ) : (
                             <span className="text-sm text-gray-600">{item.keterangan || '-'}</span>
+                          )}
+                        </td>
+                        <td className="px-4 py-3">
+                          {editingTanggal ? (
+                            <input
+                              type="date"
+                              value={editedTanggal[item.rowIndex] ?? item.tanggal ?? ''}
+                              onChange={(e) => setEditedTanggal({ ...editedTanggal, [item.rowIndex]: e.target.value })}
+                              className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-cyan-500 focus:outline-none text-gray-900"
+                            />
+                          ) : (
+                            <span className="text-sm text-gray-600">{item.tanggal || '-'}</span>
                           )}
                         </td>
                       </tr>
