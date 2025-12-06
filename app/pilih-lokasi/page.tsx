@@ -17,6 +17,12 @@ export default function PilihLokasiPage() {
     
     if (!isLoggedIn) {
       router.push('/login');
+      return;
+    }
+
+    // If user is not from ULTG, redirect to their location's alat page
+    if (office && office !== 'ultg-yogyakarta') {
+      router.push(`/lokasi/${office}/alat`);
     }
   }, [router]);
 

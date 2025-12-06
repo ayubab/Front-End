@@ -33,7 +33,14 @@ export default function LoginPage() {
     localStorage.setItem('userOffice', user.office);
     localStorage.setItem('viewMode', 'input'); // Default to input mode
     
-    router.push('/pilih-lokasi');
+    // Redirect based on user role and office
+    if (user.office === 'ultg-yogyakarta') {
+      // ULTG admin can choose any location
+      router.push('/pilih-lokasi');
+    } else {
+      // Users from specific locations go directly to their location's alat page
+      router.push(`/lokasi/${user.office}/alat`);
+    }
   };
 
   return (

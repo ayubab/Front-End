@@ -50,14 +50,73 @@ export const users: User[] = [
     role: (process.env.ADMIN_ROLE as 'admin' | 'input' | 'rekap') || 'admin',
     office: process.env.ADMIN_OFFICE || 'ultg-yogyakarta'
   },
-  // Additional users can be added here using environment variables
-  // Example:
-  // ...(process.env.USER2_EMAIL ? [{
-  //   email: process.env.USER2_EMAIL,
-  //   password: process.env.USER2_PASSWORD || '',
-  //   role: (process.env.USER2_ROLE as 'admin' | 'input' | 'rekap') || 'input',
-  //   office: process.env.USER2_OFFICE || 'gi-bantul'
-  // }] : [])
+  // Additional users for each location
+  ...(process.env.USER_BANTUL_EMAIL ? [{
+    email: process.env.USER_BANTUL_EMAIL,
+    password: process.env.USER_BANTUL_PASSWORD || 'bantul123',
+    role: (process.env.USER_BANTUL_ROLE as 'admin' | 'input' | 'rekap') || 'input',
+    office: 'gi-bantul'
+  }] : []),
+  ...(process.env.USER_WIROBRAJAN_EMAIL ? [{
+    email: process.env.USER_WIROBRAJAN_EMAIL,
+    password: process.env.USER_WIROBRAJAN_PASSWORD || 'wirobrajan123',
+    role: (process.env.USER_WIROBRAJAN_ROLE as 'admin' | 'input' | 'rekap') || 'input',
+    office: 'gis-wirobrajan'
+  }] : []),
+  ...(process.env.USER_KENTUNGAN_EMAIL ? [{
+    email: process.env.USER_KENTUNGAN_EMAIL,
+    password: process.env.USER_KENTUNGAN_PASSWORD || 'kentungan123',
+    role: (process.env.USER_KENTUNGAN_ROLE as 'admin' | 'input' | 'rekap') || 'input',
+    office: 'gi-kentungan'
+  }] : []),
+  ...(process.env.USER_GEJAYAN_EMAIL ? [{
+    email: process.env.USER_GEJAYAN_EMAIL,
+    password: process.env.USER_GEJAYAN_PASSWORD || 'gejayan123',
+    role: (process.env.USER_GEJAYAN_ROLE as 'admin' | 'input' | 'rekap') || 'input',
+    office: 'gis-gejayan'
+  }] : []),
+  ...(process.env.USER_KLATEN_EMAIL ? [{
+    email: process.env.USER_KLATEN_EMAIL,
+    password: process.env.USER_KLATEN_PASSWORD || 'klaten123',
+    role: (process.env.USER_KLATEN_ROLE as 'admin' | 'input' | 'rekap') || 'input',
+    office: 'gi-klaten'
+  }] : []),
+  ...(process.env.USER_KALASAN_EMAIL ? [{
+    email: process.env.USER_KALASAN_EMAIL,
+    password: process.env.USER_KALASAN_PASSWORD || 'kalasan123',
+    role: (process.env.USER_KALASAN_ROLE as 'admin' | 'input' | 'rekap') || 'input',
+    office: 'gi-kalasan'
+  }] : []),
+  ...(process.env.USER_SEMANU_EMAIL ? [{
+    email: process.env.USER_SEMANU_EMAIL,
+    password: process.env.USER_SEMANU_PASSWORD || 'semanu123',
+    role: (process.env.USER_SEMANU_ROLE as 'admin' | 'input' | 'rekap') || 'input',
+    office: 'gi-semanu'
+  }] : []),
+  ...(process.env.USER_GODEAN_EMAIL ? [{
+    email: process.env.USER_GODEAN_EMAIL,
+    password: process.env.USER_GODEAN_PASSWORD || 'godean123',
+    role: (process.env.USER_GODEAN_ROLE as 'admin' | 'input' | 'rekap') || 'input',
+    office: 'gi-godean'
+  }] : []),
+  ...(process.env.USER_MEDARI_EMAIL ? [{
+    email: process.env.USER_MEDARI_EMAIL,
+    password: process.env.USER_MEDARI_PASSWORD || 'medari123',
+    role: (process.env.USER_MEDARI_ROLE as 'admin' | 'input' | 'rekap') || 'input',
+    office: 'gi-medari'
+  }] : []),
+  ...(process.env.USER_WATES_EMAIL ? [{
+    email: process.env.USER_WATES_EMAIL,
+    password: process.env.USER_WATES_PASSWORD || 'wates123',
+    role: (process.env.USER_WATES_ROLE as 'admin' | 'input' | 'rekap') || 'input',
+    office: 'gi-wates'
+  }] : []),
+  ...(process.env.USER_PURWOREJO_EMAIL ? [{
+    email: process.env.USER_PURWOREJO_EMAIL,
+    password: process.env.USER_PURWOREJO_PASSWORD || 'purworejo123',
+    role: (process.env.USER_PURWOREJO_ROLE as 'admin' | 'input' | 'rekap') || 'input',
+    office: 'gi-purworejo'
+  }] : []),
 ];
 
 // 9 Kategori APD

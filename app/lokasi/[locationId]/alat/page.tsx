@@ -22,8 +22,15 @@ export default function PilihAlatPage() {
     
     if (!isLoggedIn) {
       router.push('/login');
+      return;
     }
-  }, [router]);
+
+    // Check if user has access to this location
+    if (office && office !== 'ultg-yogyakarta' && office !== locationId) {
+      // User is not ULTG admin and trying to access a different location
+      router.push(`/lokasi/${office}/alat`);
+    }
+  }, [router, locationId]);
 
   if (!location) {
     return (
@@ -34,12 +41,25 @@ export default function PilihAlatPage() {
   }
 
   const handleBack = () => {
-    router.push('/pilih-lokasi');
+    // Only ULTG users can go back to location selection
+    if (userOffice === 'ultg-yogyakarta') {
+      router.push('/pilih-lokasi');
+    }
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('isLoggedIn');
+    localStorage.removeItem('userRole');
+    localStorage.removeItem('userOffice');
+    localStorage.removeItem('viewMode');
+    router.push('/login');
   };
 
   const handleCategorySelect = (categoryId: string) => {
-    // Special routing for APD
-    if (categoryId === 'apd') {
+    // Special routing for Denah
+    if (categoryId === 'denah') {
+      router.push(`/lokasi/${locationId}/denah`);
+    } else if (categoryId === 'apd') {
       router.push(`/lokasi/${locationId}/alat/apd`);
     } else if (categoryId === 'apd-std') {
       router.push(`/lokasi/${locationId}/alat/apd-std`);
@@ -60,12 +80,14 @@ export default function PilihAlatPage() {
       <div className="bg-cyan-600 text-white p-4 shadow-lg">
         <div className="max-w-6xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <button
-              onClick={handleBack}
-              className="w-10 h-10 bg-white/20 hover:bg-white/30 rounded-lg flex items-center justify-center transition-colors"
-            >
-              <span className="text-xl">←</span>
-            </button>
+            {userOffice === 'ultg-yogyakarta' && (
+              <button
+                onClick={handleBack}
+                className="w-10 h-10 bg-white/20 hover:bg-white/30 rounded-lg flex items-center justify-center transition-colors"
+              >
+                <span className="text-xl">←</span>
+              </button>
+            )}
             <div>
               <h1 className="text-xl font-bold">{location.name}</h1>
               <p className="text-sm text-cyan-100">
@@ -74,8 +96,15 @@ export default function PilihAlatPage() {
             </div>
           </div>
           
-          {userOffice === 'ultg-yogyakarta' && (
+          {userOffice === 'ultg-yogyakarta' ? (
             <div className="flex items-center gap-3">
+              <button
+                onClick={() => router.push('/rekap-excel')}
+                className="px-4 py-2 bg-green-500 hover:bg-green-600 rounded-lg text-sm font-semibold transition-colors"
+                title="Lihat Semua Excel Sheets"
+              >
+                📄 Excel Rekap
+              </button>
               <button
                 onClick={() => {
                   setViewMode('input');
@@ -90,17 +119,19 @@ export default function PilihAlatPage() {
                 ✏️ Input
               </button>
               <button
-                onClick={() => {
-                  setViewMode('rekap');
-                  localStorage.setItem('viewMode', 'rekap');
-                }}
-                className={`px-4 py-2 rounded-lg text-sm font-semibold transition-colors ${
-                  viewMode === 'rekap' 
-                    ? 'bg-cyan-500 hover:bg-cyan-600' 
-                    : 'bg-gray-500 hover:bg-gray-600'
-                }`}
+                onClick={handleLogout}
+                className="px-4 py-2 bg-red-500 hover:bg-red-600 rounded-lg text-sm font-semibold transition-colors"
               >
-                📊 Rekap
+                Logout
+              </button>
+            </div>
+          ) : (
+            <div className="flex items-center gap-3">
+              <button
+                onClick={handleLogout}
+                className="px-4 py-2 bg-red-500 hover:bg-red-600 rounded-lg text-sm font-semibold transition-colors"
+              >
+                Logout
               </button>
             </div>
           )}
