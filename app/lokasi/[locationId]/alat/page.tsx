@@ -41,6 +41,8 @@ export default function PilihAlatPage() {
     // Special routing for APD
     if (categoryId === 'apd') {
       router.push(`/lokasi/${locationId}/alat/apd`);
+    } else if (categoryId === 'apd-std') {
+      router.push(`/lokasi/${locationId}/alat/apd-std`);
     } else {
       router.push(`/lokasi/${locationId}/alat/${categoryId}`);
     }
