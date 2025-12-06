@@ -53,6 +53,12 @@ export default function HydrantPage() {
   const [selectedItem, setSelectedItem] = useState<HydrantItem | null>(null);
   const [editedData, setEditedData] = useState<Partial<HydrantItem>>({});
   const [inlineEditing, setInlineEditing] = useState<{[key: string]: boolean}>({});
+  const [editingBoxColumn, setEditingBoxColumn] = useState(false);
+  const [editingPilarColumn, setEditingPilarColumn] = useState(false);
+  const [editingNozzleColumn, setEditingNozzleColumn] = useState(false);
+  const [editedBoxData, setEditedBoxData] = useState<{[rowIndex: number]: string}>({});
+  const [editedPilarData, setEditedPilarData] = useState<{[rowIndex: number]: string}>({});
+  const [editedNozzleData, setEditedNozzleData] = useState<{[rowIndex: number]: string}>({});
 
   useEffect(() => {
     const isLoggedIn = localStorage.getItem('isLoggedIn');
@@ -128,6 +134,141 @@ export default function HydrantPage() {
       }
     } catch (error) {
       console.error('Error updating pump data:', error);
+      alert('Terjadi kesalahan saat memperbarui data');
+    } finally {
+      setUpdating(false);
+    }
+  };
+
+  const handleEditBoxColumn = () => {
+    setEditingBoxColumn(true);
+    const initialData: {[rowIndex: number]: string} = {};
+    hydrantData.forEach(item => {
+      initialData[item.rowIndex] = item.boxKondisi;
+    });
+    setEditedBoxData(initialData);
+  };
+
+  const handleEditPilarColumn = () => {
+    setEditingPilarColumn(true);
+    const initialData: {[rowIndex: number]: string} = {};
+    hydrantData.forEach(item => {
+      initialData[item.rowIndex] = item.pilarKondisi;
+    });
+    setEditedPilarData(initialData);
+  };
+
+  const handleEditNozzleColumn = () => {
+    setEditingNozzleColumn(true);
+    const initialData: {[rowIndex: number]: string} = {};
+    hydrantData.forEach(item => {
+      initialData[item.rowIndex] = item.nozzleKondisi;
+    });
+    setEditedNozzleData(initialData);
+  };
+
+  const handleCancelBoxEdit = () => {
+    setEditingBoxColumn(false);
+    setEditedBoxData({});
+  };
+
+  const handleCancelPilarEdit = () => {
+    setEditingPilarColumn(false);
+    setEditedPilarData({});
+  };
+
+  const handleCancelNozzleEdit = () => {
+    setEditingNozzleColumn(false);
+    setEditedNozzleData({});
+  };
+
+  const handleSaveBoxColumn = async () => {
+    setUpdating(true);
+    try {
+      const updates = Object.entries(editedBoxData).map(([rowIndex, boxKondisi]) => ({
+        rowIndex: parseInt(rowIndex),
+        boxKondisi,
+      }));
+
+      const response = await fetch('/api/hydrant/bulk', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ locationId, updates }),
+      });
+
+      const result = await response.json();
+      if (result.success) {
+        setEditingBoxColumn(false);
+        setEditedBoxData({});
+        fetchHydrantData();
+        alert('Box Hydrant berhasil diperbarui');
+      } else {
+        alert('Gagal memperbarui Box Hydrant');
+      }
+    } catch (error) {
+      console.error('Error updating box column:', error);
+      alert('Terjadi kesalahan saat memperbarui data');
+    } finally {
+      setUpdating(false);
+    }
+  };
+
+  const handleSavePilarColumn = async () => {
+    setUpdating(true);
+    try {
+      const updates = Object.entries(editedPilarData).map(([rowIndex, pilarKondisi]) => ({
+        rowIndex: parseInt(rowIndex),
+        pilarKondisi,
+      }));
+
+      const response = await fetch('/api/hydrant/bulk', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ locationId, updates }),
+      });
+
+      const result = await response.json();
+      if (result.success) {
+        setEditingPilarColumn(false);
+        setEditedPilarData({});
+        fetchHydrantData();
+        alert('Pilar Hydrant berhasil diperbarui');
+      } else {
+        alert('Gagal memperbarui Pilar Hydrant');
+      }
+    } catch (error) {
+      console.error('Error updating pilar column:', error);
+      alert('Terjadi kesalahan saat memperbarui data');
+    } finally {
+      setUpdating(false);
+    }
+  };
+
+  const handleSaveNozzleColumn = async () => {
+    setUpdating(true);
+    try {
+      const updates = Object.entries(editedNozzleData).map(([rowIndex, nozzleKondisi]) => ({
+        rowIndex: parseInt(rowIndex),
+        nozzleKondisi,
+      }));
+
+      const response = await fetch('/api/hydrant/bulk', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ locationId, updates }),
+      });
+
+      const result = await response.json();
+      if (result.success) {
+        setEditingNozzleColumn(false);
+        setEditedNozzleData({});
+        fetchHydrantData();
+        alert('Nozzle Sprinkle berhasil diperbarui');
+      } else {
+        alert('Gagal memperbarui Nozzle Sprinkle');
+      }
+    } catch (error) {
+      console.error('Error updating nozzle column:', error);
       alert('Terjadi kesalahan saat memperbarui data');
     } finally {
       setUpdating(false);
@@ -512,9 +653,96 @@ export default function HydrantPage() {
                 <thead className="bg-gray-50">
                   <tr>
                     <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase">No</th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase">Box Hydrant</th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase">Pilar Hydrant</th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase">Nozzle Sprinkle</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase">
+                      <div className="flex items-center justify-between">
+                        <span>Box Hydrant</span>
+                        {editingBoxColumn ? (
+                          <div className="flex gap-1">
+                            <button
+                              onClick={handleSaveBoxColumn}
+                              disabled={updating}
+                              className="px-2 py-1 bg-green-600 text-white text-xs rounded hover:bg-green-700 disabled:opacity-50"
+                            >
+                              ✓
+                            </button>
+                            <button
+                              onClick={handleCancelBoxEdit}
+                              disabled={updating}
+                              className="px-2 py-1 bg-gray-400 text-white text-xs rounded hover:bg-gray-500 disabled:opacity-50"
+                            >
+                              ✕
+                            </button>
+                          </div>
+                        ) : (
+                          <button
+                            onClick={handleEditBoxColumn}
+                            className="px-2 py-1 bg-cyan-600 text-white text-xs rounded hover:bg-cyan-700"
+                          >
+                            Edit
+                          </button>
+                        )}
+                      </div>
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase">
+                      <div className="flex items-center justify-between">
+                        <span>Pilar Hydrant</span>
+                        {editingPilarColumn ? (
+                          <div className="flex gap-1">
+                            <button
+                              onClick={handleSavePilarColumn}
+                              disabled={updating}
+                              className="px-2 py-1 bg-green-600 text-white text-xs rounded hover:bg-green-700 disabled:opacity-50"
+                            >
+                              ✓
+                            </button>
+                            <button
+                              onClick={handleCancelPilarEdit}
+                              disabled={updating}
+                              className="px-2 py-1 bg-gray-400 text-white text-xs rounded hover:bg-gray-500 disabled:opacity-50"
+                            >
+                              ✕
+                            </button>
+                          </div>
+                        ) : (
+                          <button
+                            onClick={handleEditPilarColumn}
+                            className="px-2 py-1 bg-cyan-600 text-white text-xs rounded hover:bg-cyan-700"
+                          >
+                            Edit
+                          </button>
+                        )}
+                      </div>
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase">
+                      <div className="flex items-center justify-between">
+                        <span>Nozzle Sprinkle</span>
+                        {editingNozzleColumn ? (
+                          <div className="flex gap-1">
+                            <button
+                              onClick={handleSaveNozzleColumn}
+                              disabled={updating}
+                              className="px-2 py-1 bg-green-600 text-white text-xs rounded hover:bg-green-700 disabled:opacity-50"
+                            >
+                              ✓
+                            </button>
+                            <button
+                              onClick={handleCancelNozzleEdit}
+                              disabled={updating}
+                              className="px-2 py-1 bg-gray-400 text-white text-xs rounded hover:bg-gray-500 disabled:opacity-50"
+                            >
+                              ✕
+                            </button>
+                          </div>
+                        ) : (
+                          <button
+                            onClick={handleEditNozzleColumn}
+                            className="px-2 py-1 bg-cyan-600 text-white text-xs rounded hover:bg-cyan-700"
+                          >
+                            Edit
+                          </button>
+                        )}
+                      </div>
+                    </th>
                     <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase">Tanggal</th>
                     <th className="px-4 py-3 text-center text-xs font-semibold text-gray-700 uppercase">Aksi</th>
                   </tr>
@@ -527,18 +755,26 @@ export default function HydrantPage() {
                         <div className="text-sm">
                           <div className="font-semibold text-gray-900">{item.boxNo}</div>
                           <div className="text-gray-600">{item.boxLocation}</div>
-                          {fieldMetadata.boxKondisi && fieldMetadata.boxKondisi.length > 0 ? (
-                            <select
-                              value={item.boxKondisi || ''}
-                              onChange={(e) => handleInlineKondisiChange(item, 'boxKondisi', e.target.value)}
-                              disabled={inlineEditing[`${item.rowIndex}-boxKondisi`]}
-                              className="mt-1 text-xs px-2 py-1 border border-gray-300 rounded-full focus:ring-2 focus:ring-cyan-500 focus:outline-none disabled:opacity-50"
-                            >
-                              <option value="">Pilih kondisi</option>
-                              {fieldMetadata.boxKondisi.map((choice, idx) => (
-                                <option key={idx} value={choice}>{choice}</option>
-                              ))}
-                            </select>
+                          {editingBoxColumn ? (
+                            fieldMetadata.boxKondisi && fieldMetadata.boxKondisi.length > 0 ? (
+                              <select
+                                value={editedBoxData[item.rowIndex] || item.boxKondisi || ''}
+                                onChange={(e) => setEditedBoxData({ ...editedBoxData, [item.rowIndex]: e.target.value })}
+                                className="mt-1 text-xs px-2 py-1 border border-gray-300 rounded-full focus:ring-2 focus:ring-cyan-500 focus:outline-none text-gray-900"
+                              >
+                                <option value="">Pilih kondisi</option>
+                                {fieldMetadata.boxKondisi.map((choice, idx) => (
+                                  <option key={idx} value={choice}>{choice}</option>
+                                ))}
+                              </select>
+                            ) : (
+                              <input
+                                type="text"
+                                value={editedBoxData[item.rowIndex] || item.boxKondisi || ''}
+                                onChange={(e) => setEditedBoxData({ ...editedBoxData, [item.rowIndex]: e.target.value })}
+                                className="mt-1 text-xs px-2 py-1 border border-gray-300 rounded-full focus:ring-2 focus:ring-cyan-500 focus:outline-none text-gray-900"
+                              />
+                            )
                           ) : (
                             <div className={`inline-block mt-1 px-2 py-1 text-xs rounded-full ${
                               item.boxKondisi === 'Normal' ? 'bg-green-100 text-green-800' : 
@@ -554,18 +790,26 @@ export default function HydrantPage() {
                         <div className="text-sm">
                           <div className="font-semibold text-gray-900">{item.pilarNo}</div>
                           <div className="text-gray-600">{item.pilarLocation}</div>
-                          {fieldMetadata.pilarKondisi && fieldMetadata.pilarKondisi.length > 0 ? (
-                            <select
-                              value={item.pilarKondisi || ''}
-                              onChange={(e) => handleInlineKondisiChange(item, 'pilarKondisi', e.target.value)}
-                              disabled={inlineEditing[`${item.rowIndex}-pilarKondisi`]}
-                              className="mt-1 text-xs px-2 py-1 border border-gray-300 rounded-full focus:ring-2 focus:ring-cyan-500 focus:outline-none disabled:opacity-50"
-                            >
-                              <option value="">Pilih kondisi</option>
-                              {fieldMetadata.pilarKondisi.map((choice, idx) => (
-                                <option key={idx} value={choice}>{choice}</option>
-                              ))}
-                            </select>
+                          {editingPilarColumn ? (
+                            fieldMetadata.pilarKondisi && fieldMetadata.pilarKondisi.length > 0 ? (
+                              <select
+                                value={editedPilarData[item.rowIndex] || item.pilarKondisi || ''}
+                                onChange={(e) => setEditedPilarData({ ...editedPilarData, [item.rowIndex]: e.target.value })}
+                                className="mt-1 text-xs px-2 py-1 border border-gray-300 rounded-full focus:ring-2 focus:ring-cyan-500 focus:outline-none text-gray-900"
+                              >
+                                <option value="">Pilih kondisi</option>
+                                {fieldMetadata.pilarKondisi.map((choice, idx) => (
+                                  <option key={idx} value={choice}>{choice}</option>
+                                ))}
+                              </select>
+                            ) : (
+                              <input
+                                type="text"
+                                value={editedPilarData[item.rowIndex] || item.pilarKondisi || ''}
+                                onChange={(e) => setEditedPilarData({ ...editedPilarData, [item.rowIndex]: e.target.value })}
+                                className="mt-1 text-xs px-2 py-1 border border-gray-300 rounded-full focus:ring-2 focus:ring-cyan-500 focus:outline-none text-gray-900"
+                              />
+                            )
                           ) : (
                             <div className={`inline-block mt-1 px-2 py-1 text-xs rounded-full ${
                               item.pilarKondisi === 'Normal' ? 'bg-green-100 text-green-800' : 
@@ -581,18 +825,26 @@ export default function HydrantPage() {
                         <div className="text-sm">
                           <div className="font-semibold text-gray-900">{item.nozzleNo}</div>
                           <div className="text-gray-600">{item.nozzleLocation}</div>
-                          {fieldMetadata.nozzleKondisi && fieldMetadata.nozzleKondisi.length > 0 ? (
-                            <select
-                              value={item.nozzleKondisi || ''}
-                              onChange={(e) => handleInlineKondisiChange(item, 'nozzleKondisi', e.target.value)}
-                              disabled={inlineEditing[`${item.rowIndex}-nozzleKondisi`]}
-                              className="mt-1 text-xs px-2 py-1 border border-gray-300 rounded-full focus:ring-2 focus:ring-cyan-500 focus:outline-none disabled:opacity-50"
-                            >
-                              <option value="">Pilih kondisi</option>
-                              {fieldMetadata.nozzleKondisi.map((choice, idx) => (
-                                <option key={idx} value={choice}>{choice}</option>
-                              ))}
-                            </select>
+                          {editingNozzleColumn ? (
+                            fieldMetadata.nozzleKondisi && fieldMetadata.nozzleKondisi.length > 0 ? (
+                              <select
+                                value={editedNozzleData[item.rowIndex] || item.nozzleKondisi || ''}
+                                onChange={(e) => setEditedNozzleData({ ...editedNozzleData, [item.rowIndex]: e.target.value })}
+                                className="mt-1 text-xs px-2 py-1 border border-gray-300 rounded-full focus:ring-2 focus:ring-cyan-500 focus:outline-none text-gray-900"
+                              >
+                                <option value="">Pilih kondisi</option>
+                                {fieldMetadata.nozzleKondisi.map((choice, idx) => (
+                                  <option key={idx} value={choice}>{choice}</option>
+                                ))}
+                              </select>
+                            ) : (
+                              <input
+                                type="text"
+                                value={editedNozzleData[item.rowIndex] || item.nozzleKondisi || ''}
+                                onChange={(e) => setEditedNozzleData({ ...editedNozzleData, [item.rowIndex]: e.target.value })}
+                                className="mt-1 text-xs px-2 py-1 border border-gray-300 rounded-full focus:ring-2 focus:ring-cyan-500 focus:outline-none text-gray-900"
+                              />
+                            )
                           ) : (
                             <div className={`inline-block mt-1 px-2 py-1 text-xs rounded-full ${
                               item.nozzleKondisi === 'Normal' ? 'bg-green-100 text-green-800' : 
