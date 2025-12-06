@@ -31,7 +31,6 @@ interface HydrantItem {
   tanggalPengecekan: string;
   keterangan: string;
   linkLks: string;
-  tanggal: string;
 }
 
 interface FieldMetadata {
@@ -286,10 +285,9 @@ export default function HydrantPage() {
       boxKondisi: item.boxKondisi,
       pilarKondisi: item.pilarKondisi,
       nozzleKondisi: item.nozzleKondisi,
-      tanggalPengecekan: item.tanggalPengecekan,
+      tanggalPengecekan: globalTanggal || item.tanggalPengecekan || new Date().toISOString().split('T')[0],
       keterangan: item.keterangan,
       linkLks: item.linkLks,
-      tanggal: globalTanggal || item.tanggal || new Date().toISOString().split('T')[0],
     });
   };
 
@@ -1099,19 +1097,6 @@ export default function HydrantPage() {
                   value={editedData.linkLks || ''}
                   onChange={(e) => setEditedData({ ...editedData, linkLks: e.target.value })}
                   placeholder="Masukkan link (opsional)"
-                  className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-500 text-gray-900"
-                />
-              </div>
-
-              {/* Tanggal */}
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Tanggal
-                </label>
-                <input
-                  type="date"
-                  value={editedData.tanggal || ''}
-                  onChange={(e) => setEditedData({ ...editedData, tanggal: e.target.value })}
                   className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-500 text-gray-900"
                 />
               </div>
