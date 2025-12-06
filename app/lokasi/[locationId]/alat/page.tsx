@@ -38,7 +38,12 @@ export default function PilihAlatPage() {
   };
 
   const handleCategorySelect = (categoryId: string) => {
-    router.push(`/lokasi/${locationId}/alat/${categoryId}`);
+    // Special routing for APD
+    if (categoryId === 'apd') {
+      router.push(`/lokasi/${locationId}/alat/apd`);
+    } else {
+      router.push(`/lokasi/${locationId}/alat/${categoryId}`);
+    }
   };
 
   return (
