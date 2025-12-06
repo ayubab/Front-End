@@ -98,7 +98,7 @@ export async function GET(request: NextRequest) {
       // Category rows: no is a letter (A, B, etc.) and has namaPeralatan
       const isCategory = no && /^[A-Z]$/.test(no.trim());
 
-      apdData.push({
+      alatData.push({
         rowIndex,
         no: no || '',
         namaPeralatan: namaPeralatan || '',
