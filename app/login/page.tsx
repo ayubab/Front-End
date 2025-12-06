@@ -3,15 +3,15 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { getUserByCredentials } from '@/lib/data';
 
 export default function LoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     // Simple validation
@@ -20,26 +20,44 @@ export default function LoginPage() {
       return;
     }
 
-    // Check user credentials
-    const user = getUserByCredentials(email, password);
-    if (!user) {
-      setError('Email atau password salah');
-      return;
-    }
+    setLoading(true);
+    setError('');
 
-    // Authentication successful
-    localStorage.setItem('isLoggedIn', 'true');
-    localStorage.setItem('userRole', user.role);
-    localStorage.setItem('userOffice', user.office);
-    localStorage.setItem('viewMode', 'input'); // Default to input mode
-    
-    // Redirect based on user role and office
-    if (user.office === 'ultg-yogyakarta') {
-      // ULTG admin can choose any location
-      router.push('/pilih-lokasi');
-    } else {
-      // Users from specific locations go directly to their location's alat page
-      router.push(`/lokasi/${user.office}/alat`);
+    try {
+      // Call server-side authentication API
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setError(data.error || 'Login gagal');
+        setLoading(false);
+        return;
+      }
+
+      // Authentication successful
+      localStorage.setItem('isLoggedIn', 'true');
+      localStorage.setItem('userRole', data.user.role);
+      localStorage.setItem('userOffice', data.user.office);
+      localStorage.setItem('viewMode', 'input'); // Default to input mode
+      
+      // Redirect based on user role and office
+      if (data.user.office === 'ultg-yogyakarta') {
+        // ULTG admin can choose any location
+        router.push('/pilih-lokasi');
+      } else {
+        // Users from specific locations go directly to their location's alat page
+        router.push(`/lokasi/${data.user.office}/alat`);
+      }
+    } catch (error) {
+      setError('Terjadi kesalahan. Silakan coba lagi.');
+      setLoading(false);
     }
   };
 
@@ -86,9 +104,10 @@ export default function LoginPage() {
 
             <button
               type="submit"
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-xl transition-colors duration-200 shadow-lg"
+              disabled={loading}
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-xl transition-colors duration-200 shadow-lg disabled:bg-blue-400 disabled:cursor-not-allowed"
             >
-              Masuk
+              {loading ? 'Memproses...' : 'Masuk'}
             </button>
           </form>
 
