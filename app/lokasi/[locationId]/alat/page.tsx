@@ -47,6 +47,8 @@ export default function PilihAlatPage() {
       router.push(`/lokasi/${locationId}/alat/alat-kerja`);
     } else if (categoryId === 'limbah-k3') {
       router.push(`/lokasi/${locationId}/alat/limbah-k3`);
+    } else if (categoryId === 'cctv') {
+      router.push(`/lokasi/${locationId}/alat/cctv`);
     } else {
       router.push(`/lokasi/${locationId}/alat/${categoryId}`);
     }
