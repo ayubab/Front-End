@@ -44,79 +44,80 @@ export const locations: Location[] = [
 
 // Users untuk login
 export const users: User[] = [
+  // Admin ULTG
   {
-    email: process.env.ADMIN_EMAIL || 'admin@ultg.co.id',
-    password: process.env.ADMIN_PASSWORD || 'admin123',
-    role: (process.env.ADMIN_ROLE as 'admin' | 'input' | 'rekap') || 'admin',
-    office: process.env.ADMIN_OFFICE || 'ultg-yogyakarta'
+    email: 'admin@ultg.co.id',
+    password: 'admin123',
+    role: 'admin',
+    office: 'ultg-yogyakarta'
   },
-  // Additional users for each location
-  ...(process.env.USER_BANTUL_EMAIL ? [{
-    email: process.env.USER_BANTUL_EMAIL,
-    password: process.env.USER_BANTUL_PASSWORD || 'bantul123',
-    role: (process.env.USER_BANTUL_ROLE as 'admin' | 'input' | 'rekap') || 'input',
+  // Location-specific users
+  {
+    email: 'bantul@ultg.co.id',
+    password: 'bantul123',
+    role: 'input',
     office: 'gi-bantul'
-  }] : []),
-  ...(process.env.USER_WIROBRAJAN_EMAIL ? [{
-    email: process.env.USER_WIROBRAJAN_EMAIL,
-    password: process.env.USER_WIROBRAJAN_PASSWORD || 'wirobrajan123',
-    role: (process.env.USER_WIROBRAJAN_ROLE as 'admin' | 'input' | 'rekap') || 'input',
+  },
+  {
+    email: 'wirobrajan@ultg.co.id',
+    password: 'wirobrajan123',
+    role: 'input',
     office: 'gis-wirobrajan'
-  }] : []),
-  ...(process.env.USER_KENTUNGAN_EMAIL ? [{
-    email: process.env.USER_KENTUNGAN_EMAIL,
-    password: process.env.USER_KENTUNGAN_PASSWORD || 'kentungan123',
-    role: (process.env.USER_KENTUNGAN_ROLE as 'admin' | 'input' | 'rekap') || 'input',
+  },
+  {
+    email: 'kentungan@ultg.co.id',
+    password: 'kentungan123',
+    role: 'input',
     office: 'gi-kentungan'
-  }] : []),
-  ...(process.env.USER_GEJAYAN_EMAIL ? [{
-    email: process.env.USER_GEJAYAN_EMAIL,
-    password: process.env.USER_GEJAYAN_PASSWORD || 'gejayan123',
-    role: (process.env.USER_GEJAYAN_ROLE as 'admin' | 'input' | 'rekap') || 'input',
+  },
+  {
+    email: 'gejayan@ultg.co.id',
+    password: 'gejayan123',
+    role: 'input',
     office: 'gis-gejayan'
-  }] : []),
-  ...(process.env.USER_KLATEN_EMAIL ? [{
-    email: process.env.USER_KLATEN_EMAIL,
-    password: process.env.USER_KLATEN_PASSWORD || 'klaten123',
-    role: (process.env.USER_KLATEN_ROLE as 'admin' | 'input' | 'rekap') || 'input',
+  },
+  {
+    email: 'klaten@ultg.co.id',
+    password: 'klaten123',
+    role: 'input',
     office: 'gi-klaten'
-  }] : []),
-  ...(process.env.USER_KALASAN_EMAIL ? [{
-    email: process.env.USER_KALASAN_EMAIL,
-    password: process.env.USER_KALASAN_PASSWORD || 'kalasan123',
-    role: (process.env.USER_KALASAN_ROLE as 'admin' | 'input' | 'rekap') || 'input',
+  },
+  {
+    email: 'kalasan@ultg.co.id',
+    password: 'kalasan123',
+    role: 'input',
     office: 'gi-kalasan'
-  }] : []),
-  ...(process.env.USER_SEMANU_EMAIL ? [{
-    email: process.env.USER_SEMANU_EMAIL,
-    password: process.env.USER_SEMANU_PASSWORD || 'semanu123',
-    role: (process.env.USER_SEMANU_ROLE as 'admin' | 'input' | 'rekap') || 'input',
+  },
+  {
+    email: 'semanu@ultg.co.id',
+    password: 'semanu123',
+    role: 'input',
     office: 'gi-semanu'
-  }] : []),
-  ...(process.env.USER_GODEAN_EMAIL ? [{
-    email: process.env.USER_GODEAN_EMAIL,
-    password: process.env.USER_GODEAN_PASSWORD || 'godean123',
-    role: (process.env.USER_GODEAN_ROLE as 'admin' | 'input' | 'rekap') || 'input',
+  },
+  {
+    email: 'godean@ultg.co.id',
+    password: 'godean123',
+    role: 'input',
     office: 'gi-godean'
-  }] : []),
-  ...(process.env.USER_MEDARI_EMAIL ? [{
-    email: process.env.USER_MEDARI_EMAIL,
-    password: process.env.USER_MEDARI_PASSWORD || 'medari123',
-    role: (process.env.USER_MEDARI_ROLE as 'admin' | 'input' | 'rekap') || 'input',
+  },
+  {
+    email: 'medari@ultg.co.id',
+    password: 'medari123',
+    role: 'input',
     office: 'gi-medari'
-  }] : []),
-  ...(process.env.USER_WATES_EMAIL ? [{
-    email: process.env.USER_WATES_EMAIL,
-    password: process.env.USER_WATES_PASSWORD || 'wates123',
-    role: (process.env.USER_WATES_ROLE as 'admin' | 'input' | 'rekap') || 'input',
+  },
+  {
+    email: 'wates@ultg.co.id',
+    password: 'wates123',
+    role: 'input',
     office: 'gi-wates'
-  }] : []),
-  ...(process.env.USER_PURWOREJO_EMAIL ? [{
-    email: process.env.USER_PURWOREJO_EMAIL,
-    password: process.env.USER_PURWOREJO_PASSWORD || 'purworejo123',
-    role: (process.env.USER_PURWOREJO_ROLE as 'admin' | 'input' | 'rekap') || 'input',
+  },
+  {
+    email: 'purworejo@ultg.co.id',
+    password: 'purworejo123',
+    role: 'input',
     office: 'gi-purworejo'
-  }] : []),
+  },
 ];
 
 // 9 Kategori APD
