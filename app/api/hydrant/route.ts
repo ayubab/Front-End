@@ -414,6 +414,13 @@ export async function PUT(request: NextRequest) {
       });
     }
 
+    // Update tanggal in cell I5 with current date
+    const currentDate = new Date().toISOString().split('T')[0]; // Format: YYYY-MM-DD
+    batchUpdates.push({
+      range: `${sheetName}!I5`,
+      values: [[currentDate]]
+    });
+
     // Execute batch update
     if (batchUpdates.length > 0) {
       await sheets.spreadsheets.values.batchUpdate({

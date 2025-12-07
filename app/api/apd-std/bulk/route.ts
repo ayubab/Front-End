@@ -116,6 +116,13 @@ export async function PUT(request: NextRequest) {
       );
     }
 
+    // Add current date to cell K5
+    const currentDate = new Date().toISOString().split('T')[0];
+    batchData.push({
+      range: 'APD STD!K5',
+      values: [[currentDate]],
+    });
+
     // Execute batch update
     await sheets.spreadsheets.values.batchUpdate({
       spreadsheetId: SHEET_ID,

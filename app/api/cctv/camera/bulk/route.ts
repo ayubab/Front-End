@@ -65,6 +65,13 @@ export async function PUT(request: NextRequest) {
       };
     });
 
+    // Add current date to cell K3
+    const currentDate = new Date().toISOString().split('T')[0];
+    batchUpdates.push({
+      range: 'CCTV!K3',
+      values: [[currentDate]],
+    });
+
     await sheets.spreadsheets.values.batchUpdate({
       spreadsheetId,
       requestBody: {
