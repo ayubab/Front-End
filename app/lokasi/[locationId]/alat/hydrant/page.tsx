@@ -772,8 +772,6 @@ export default function HydrantPage() {
                         )}
                       </div>
                     </th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase">Tanggal</th>
-                    <th className="px-4 py-3 text-center text-xs font-semibold text-gray-700 uppercase">Aksi</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200">
@@ -884,15 +882,6 @@ export default function HydrantPage() {
                             </div>
                           )}
                         </div>
-                      </td>
-                      <td className="px-4 py-4 text-sm text-gray-600">{item.tanggalPengecekan}</td>
-                      <td className="px-4 py-4 text-center">
-                        <button
-                          onClick={() => handleEdit(item)}
-                          className="px-4 py-2 bg-cyan-500 hover:bg-cyan-600 text-white text-sm font-semibold rounded-lg transition-colors"
-                        >
-                          Update
-                        </button>
                       </td>
                     </tr>
                   ))}
