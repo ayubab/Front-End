@@ -46,11 +46,23 @@ export async function GET(request: NextRequest) {
     const authClient = await getAuthClient();
     const sheets = google.sheets({ version: 'v4', auth: authClient as any });
 
-    // Fetch limbah summary data (A5:C10 - rows 5-9 for 5 types of limbah)
-    const summaryResponse = await sheets.spreadsheets.values.get({
-      spreadsheetId: SHEET_ID,
-      range: 'Limbah K3!A5:C10',
-    });
+    // Fetch date, summary, and logs based on new layout
+    const [dateResponse, summaryResponse, logsResponse] = await Promise.all([
+      sheets.spreadsheets.values.get({
+        spreadsheetId: SHEET_ID,
+        range: 'Limbah K3!D3',
+      }),
+      // Summary rows A5:C9
+      sheets.spreadsheets.values.get({
+        spreadsheetId: SHEET_ID,
+        range: 'Limbah K3!A5:C9',
+      }),
+      // Log rows F6:J19
+      sheets.spreadsheets.values.get({
+        spreadsheetId: SHEET_ID,
+        range: 'Limbah K3!F6:J19',
+      }),
+    ]);
 
     const summaryRows = summaryResponse.data.values || [];
     const limbahData: any[] = [];
@@ -67,17 +79,11 @@ export async function GET(request: NextRequest) {
       });
     });
 
-    // Fetch log data (E5:I100 - TGL, JENIS AWAL LIMBAH, MASUK, KELUAR, KETERANGAN)
-    const logsResponse = await sheets.spreadsheets.values.get({
-      spreadsheetId: SHEET_ID,
-      range: 'Limbah K3!E5:I100',
-    });
-
     const logsRows = logsResponse.data.values || [];
     const limbahLogs: any[] = [];
 
     logsRows.forEach((row, index) => {
-      const rowIndex = index + 5;
+      const rowIndex = index + 6; // actual sheet row
       const [tanggal, jenisLimbah, masuk, keluar, keterangan] = row;
 
       // Only include rows with data
@@ -97,6 +103,7 @@ export async function GET(request: NextRequest) {
       success: true,
       data: limbahData,
       logs: limbahLogs,
+      lastUpdateDate: dateResponse.data.values?.[0]?.[0] || '',
     });
   } catch (error) {
     console.error('Error fetching Limbah K3 data:', error);

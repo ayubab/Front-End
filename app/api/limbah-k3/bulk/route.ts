@@ -25,7 +25,7 @@ async function getAuthClient() {
 
 export async function PUT(request: NextRequest) {
   try {
-    const { locationId, updates } = await request.json();
+    const { locationId, updates, tanggalUpdate } = await request.json();
 
     if (!locationId) {
       return NextResponse.json(
@@ -58,7 +58,7 @@ export async function PUT(request: NextRequest) {
     for (const update of updates) {
       const { rowIndex, jumlah } = update;
 
-      if (!rowIndex) continue;
+      if (rowIndex === undefined || rowIndex === null) continue;
 
       // Update Jumlah (ton) - column C
       if (jumlah !== undefined) {
@@ -77,7 +77,7 @@ export async function PUT(request: NextRequest) {
     }
 
     // Add current date to cell D3
-    const currentDate = new Date().toISOString().split('T')[0];
+    const currentDate = (tanggalUpdate || new Date().toISOString().split('T')[0]).toString();
     batchData.push({
       range: 'Limbah K3!D3',
       values: [[currentDate]],

@@ -6,7 +6,6 @@ import { getLocationById } from '@/lib/data';
 
 interface LimbahItem {
   rowIndex: number;
-  no: string;
   jenisLimbah: string;
   jumlah: string;
 }
@@ -28,6 +27,8 @@ export default function LimbahK3Page() {
 
   const [limbahData, setLimbahData] = useState<LimbahItem[]>([]);
   const [limbahLogs, setLimbahLogs] = useState<LimbahLog[]>([]);
+  const [lastUpdateDate, setLastUpdateDate] = useState<string>('');
+  const [globalTanggal, setGlobalTanggal] = useState<string>('');
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
   const [editingJumlah, setEditingJumlah] = useState(false);
@@ -49,6 +50,8 @@ export default function LimbahK3Page() {
       router.push('/login');
     } else {
       fetchLimbahData();
+      const today = new Date().toISOString().split('T')[0];
+      setGlobalTanggal(today);
     }
   }, [router, locationId]);
 
@@ -61,6 +64,10 @@ export default function LimbahK3Page() {
       if (result.success) {
         setLimbahData(result.data);
         setLimbahLogs(result.logs || []);
+        if (result.lastUpdateDate) {
+          setLastUpdateDate(result.lastUpdateDate);
+          setGlobalTanggal(result.lastUpdateDate);
+        }
       } else {
         alert('Gagal memuat data Limbah K3');
       }
@@ -101,7 +108,7 @@ export default function LimbahK3Page() {
       const response = await fetch('/api/limbah-k3/bulk', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ locationId, updates }),
+        body: JSON.stringify({ locationId, updates, tanggalUpdate: globalTanggal }),
       });
 
       const result = await response.json();
@@ -189,6 +196,34 @@ export default function LimbahK3Page() {
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto p-6 space-y-6">
+        {/* Tanggal Update */}
+        <div className="bg-white rounded-xl shadow-lg p-4">
+          <div className="flex items-center gap-4">
+            <div className="w-10 h-10 bg-cyan-500 rounded-full flex items-center justify-center text-white text-xl">
+              📅
+            </div>
+            <div className="flex-1">
+              <label className="block text-sm font-semibold text-gray-700 mb-1">
+                Tanggal Update (ditulis ke sel D3)
+              </label>
+              <input
+                type="date"
+                value={globalTanggal}
+                onChange={(e) => setGlobalTanggal(e.target.value)}
+                className="w-full max-w-xs px-3 py-2 rounded-lg border border-cyan-300 focus:outline-none focus:ring-2 focus:ring-cyan-500 text-gray-900 bg-white shadow-sm"
+              />
+              <p className="text-xs text-gray-500 mt-1">
+                Nilai ini dikirim ke sel D3 setiap kali menyimpan perubahan jumlah limbah.
+              </p>
+              {lastUpdateDate && (
+                <p className="text-xs text-gray-600 mt-1">
+                  Terakhir tercatat di sheet: {lastUpdateDate}
+                </p>
+              )}
+            </div>
+          </div>
+        </div>
+
         {/* Limbah Summary Table */}
         <div className="bg-white rounded-xl shadow-xl overflow-hidden">
           <div className="p-4 bg-cyan-50 border-b border-cyan-100">
