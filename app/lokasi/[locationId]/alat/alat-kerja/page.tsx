@@ -6,10 +6,8 @@ import { getLocationById } from '@/lib/data';
 
 interface AlatKerjaItem {
   rowIndex: number;
-  no: string;
   namaPeralatan: string;
   satuan: string;
-  jumlahMinimum: string;
   jumlah: string;
   merk: string;
   tahunPerolehan: string;
@@ -30,6 +28,7 @@ export default function AlatKerjaPage() {
 
   const [alatData, setAlatData] = useState<AlatKerjaItem[]>([]);
   const [fieldMetadata, setFieldMetadata] = useState<FieldMetadata>({});
+  const [lastUpdateDate, setLastUpdateDate] = useState<string>('');
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
   const [editingJumlah, setEditingJumlah] = useState(false);
@@ -42,6 +41,7 @@ export default function AlatKerjaPage() {
   const [editedTahun, setEditedTahun] = useState<{[rowIndex: number]: string}>({});
   const [editedKondisi, setEditedKondisi] = useState<{[rowIndex: number]: string}>({});
   const [editedKeterangan, setEditedKeterangan] = useState<{[rowIndex: number]: string}>({});
+  const [globalTanggal, setGlobalTanggal] = useState<string>('');
 
   useEffect(() => {
     const isLoggedIn = localStorage.getItem('isLoggedIn');
@@ -49,6 +49,8 @@ export default function AlatKerjaPage() {
       router.push('/login');
     } else {
       fetchAlatKerjaData();
+      const today = new Date().toISOString().split('T')[0];
+      setGlobalTanggal(today);
     }
   }, [router, locationId]);
 
@@ -62,6 +64,10 @@ export default function AlatKerjaPage() {
         setAlatData(result.data);
         if (result.fieldMetadata) {
           setFieldMetadata(result.fieldMetadata);
+        }
+        if (result.lastUpdateDate) {
+          setLastUpdateDate(result.lastUpdateDate);
+          setGlobalTanggal(result.lastUpdateDate);
         }
       } else {
         alert('Gagal memuat data Alat Kerja');
@@ -109,7 +115,7 @@ export default function AlatKerjaPage() {
           const response = await fetch('/api/alat-kerja/bulk', {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ locationId, updates }),
+            body: JSON.stringify({ locationId, updates, tanggalUpdate: globalTanggal }),
           });
 
           const result = await response.json();
@@ -181,6 +187,34 @@ export default function AlatKerjaPage() {
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto p-6">
+        {/* Global Tanggal Pengecekan */}
+        <div className="bg-white rounded-xl shadow-lg p-4 mb-6">
+          <div className="flex items-center gap-4">
+            <div className="w-10 h-10 bg-cyan-500 rounded-full flex items-center justify-center flex-shrink-0">
+              <span className="text-2xl">📅</span>
+            </div>
+            <div className="flex-1">
+              <label className="block text-sm font-semibold text-gray-700 mb-1">
+                Tanggal Pengecekan (ditulis ke sel J3)
+              </label>
+              <input
+                type="date"
+                value={globalTanggal}
+                onChange={(e) => setGlobalTanggal(e.target.value)}
+                className="w-full max-w-xs px-3 py-2 rounded-lg border border-cyan-300 focus:outline-none focus:ring-2 focus:ring-cyan-500 text-gray-900 bg-white shadow-sm"
+              />
+              <p className="text-xs text-gray-500 mt-1">
+                💡 Nilai ini dikirim ke sel J3 setiap kali menyimpan perubahan.
+              </p>
+              {lastUpdateDate && (
+                <p className="text-xs text-gray-600 mt-1">
+                  Terakhir tercatat di sheet: {lastUpdateDate}
+                </p>
+              )}
+            </div>
+          </div>
+        </div>
+
         <div className="bg-white rounded-xl shadow-xl overflow-hidden">
           {loading ? (
             <div className="p-12 text-center">

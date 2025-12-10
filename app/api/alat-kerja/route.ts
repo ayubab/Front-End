@@ -62,53 +62,85 @@ export async function GET(request: NextRequest) {
     const authClient = await getAuthClient();
     const sheets = google.sheets({ version: 'v4', auth: authClient as any });
 
-    // Fetch headers from row 4 (A4:J4)
-    const headersResponse = await sheets.spreadsheets.values.get({
-      spreadsheetId: SHEET_ID,
-      range: 'Alat Kerja!A4:J4',
-    });
+    // Fetch headers and last update date (J3)
+    const [headersResponse, lastUpdateResponse, dataResponse] = await Promise.all([
+      sheets.spreadsheets.values.get({
+        spreadsheetId: SHEET_ID,
+        range: 'Alat Kerja!A4:J4',
+      }),
+      sheets.spreadsheets.values.get({
+        spreadsheetId: SHEET_ID,
+        range: 'Alat Kerja!J3',
+      }),
+      // Fetch all data starting from row 6 (A6:J50)
+      sheets.spreadsheets.values.get({
+        spreadsheetId: SHEET_ID,
+        range: 'Alat Kerja!A6:J50',
+      }),
+    ]);
 
     const headers = headersResponse.data.values?.[0] || [];
+    const lastUpdateDate = lastUpdateResponse.data.values?.[0]?.[0] || '';
     
-    // Create field metadata from headers
+    // Create field metadata from editable headers only
+    const editableColumns = [
+      null, // A no
+      null, // B nama
+      null, // C satuan
+      null, // D jumlah minimum
+      null, // E empty
+      'jumlah', // F
+      'merk',   // G
+      'tahunPerolehan', // H
+      'kondisi', // I
+      'keterangan', // J
+    ];
     const fieldMetadata: { [key: string]: string[] | null } = {};
     headers.forEach((header, index) => {
-      const columnName = ['no', 'namaPeralatan', 'satuan', 'jumlahMinimum', 'gap', 'jumlah', 'merk', 'tahunPerolehan', 'kondisi', 'keterangan'][index];
-      if (columnName && columnName !== 'gap') {
-        const choices = parseChoices(header);
-        if (choices) {
-          fieldMetadata[columnName] = choices;
-        }
+      const columnName = editableColumns[index];
+      if (!columnName) return;
+      const choices = parseChoices(header);
+      if (choices) {
+        fieldMetadata[columnName] = choices;
       }
-    });
-
-    // Fetch all data starting from row 5 (A5:J150)
-    const dataResponse = await sheets.spreadsheets.values.get({
-      spreadsheetId: SHEET_ID,
-      range: 'Alat Kerja!A5:J150',
     });
 
     const rows = dataResponse.data.values || [];
     const alatData: any[] = [];
 
+    const categoryRows = new Set([5]); // row 5 contains "A Peralatan uji" header
     rows.forEach((row, index) => {
-      const rowIndex = index + 5; // Actual row number in sheet
-      const [no, namaPeralatan, satuan, jumlahMinimum, gap, jumlah, merk, tahunPerolehan, kondisi, keterangan] = row;
+      const rowIndex = index + 6; // Actual row number in sheet
+      const no = row[0]?.toString() || '';
+      const namaPeralatan = row[1]?.toString() || '';
+      const satuan = row[2]?.toString() || '';
+      const jumlahMinimum = row[3]?.toString() || '';
+      const jumlah = row[5]?.toString() || '';
+      const merk = row[6]?.toString() || '';
+      const tahunPerolehan = row[7]?.toString() || '';
+      const kondisi = row[8]?.toString() || '';
+      const keterangan = row[9]?.toString() || '';
 
-      // Category rows: no is a letter (A, B, etc.) and has namaPeralatan
-      const isCategory = no && /^[A-Z]$/.test(no.trim());
+      // Skip empty rows
+      if (!no && !namaPeralatan && !jumlah && !merk && !kondisi && !keterangan) {
+        return;
+      }
+
+      const isCategory =
+        categoryRows.has(rowIndex) ||
+        (no && /^[A-Z]$/.test(no.trim()) && namaPeralatan && !jumlah && !merk && !kondisi && !keterangan);
 
       alatData.push({
         rowIndex,
-        no: no || '',
-        namaPeralatan: namaPeralatan || '',
-        satuan: satuan || '',
-        jumlahMinimum: jumlahMinimum || '',
-        jumlah: jumlah || '',
-        merk: merk || '',
-        tahunPerolehan: tahunPerolehan || '',
-        kondisi: kondisi || '',
-        keterangan: keterangan || '',
+        no,
+        namaPeralatan,
+        satuan,
+        jumlahMinimum,
+        jumlah,
+        merk,
+        tahunPerolehan,
+        kondisi,
+        keterangan,
         isCategory,
       });
     });
@@ -117,6 +149,7 @@ export async function GET(request: NextRequest) {
       success: true,
       data: alatData,
       fieldMetadata,
+      lastUpdateDate,
     });
   } catch (error) {
     console.error('Error fetching Alat Kerja data:', error);
