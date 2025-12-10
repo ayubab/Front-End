@@ -35,11 +35,30 @@ export async function GET(request: NextRequest) {
 
     const sheets = google.sheets({ version: 'v4', auth });
 
-    // Fetch DVR data (row 3 onwards, columns A-K)
-    const dvrResponse = await sheets.spreadsheets.values.get({
-      spreadsheetId,
-      range: 'CCTV!A3:K100',
-    });
+    // Fetch last update date (K3)
+    const [lastUpdateResponse, dvrResponse, cameraResponse, monitorResponse] = await Promise.all([
+      sheets.spreadsheets.values.get({
+        spreadsheetId,
+        range: 'CCTV!K3',
+      }),
+      // DVR starts at row 7
+      sheets.spreadsheets.values.get({
+        spreadsheetId,
+        range: 'CCTV!A7:K80',
+      }),
+      // Camera starts at row 15
+      sheets.spreadsheets.values.get({
+        spreadsheetId,
+        range: 'CCTV!A15:K120',
+      }),
+      // Monitor starts at row 36
+      sheets.spreadsheets.values.get({
+        spreadsheetId,
+        range: 'CCTV!A36:E60',
+      }),
+    ]);
+
+    const lastUpdateDate = lastUpdateResponse.data.values?.[0]?.[0] || '';
 
     const dvrRows = dvrResponse.data.values || [];
     const dvrData = dvrRows
@@ -56,15 +75,9 @@ export async function GET(request: NextRequest) {
         keterangan: row[10] || '',
       }));
 
-    // Fetch Camera data (starts from a specific row, columns A-K)
-    const cameraResponse = await sheets.spreadsheets.values.get({
-      spreadsheetId,
-      range: 'CCTV!A10:K100', // Adjust based on where camera data starts
-    });
-
     const cameraRows = cameraResponse.data.values || [];
     const cameraData = cameraRows
-      .filter(row => row[0] && row[0] !== 'NO') // Filter valid rows
+      .filter(row => row[0]) // Filter valid rows
       .map(row => ({
         no: row[0] || '',
         idKamera: row[1] || '',
@@ -79,15 +92,9 @@ export async function GET(request: NextRequest) {
         keterangan: row[10] || '',
       }));
 
-    // Fetch Monitor data
-    const monitorResponse = await sheets.spreadsheets.values.get({
-      spreadsheetId,
-      range: 'CCTV!A32:E100', // Adjust based on where monitor data starts
-    });
-
     const monitorRows = monitorResponse.data.values || [];
     const monitorData = monitorRows
-      .filter(row => row[0] && row[0] !== 'NO')
+      .filter(row => row[0])
       .map(row => ({
         no: row[0] || '',
         merkTipe: row[1] || '',
@@ -101,6 +108,7 @@ export async function GET(request: NextRequest) {
       dvrData,
       cameraData,
       monitorData,
+      lastUpdateDate,
     });
   } catch (error) {
     console.error('Error fetching CCTV data:', error);

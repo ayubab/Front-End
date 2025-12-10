@@ -15,7 +15,7 @@ const COLUMN_MAP: Record<string, string> = {
 export async function PUT(request: NextRequest) {
   try {
     const body = await request.json();
-    const { locationId, column, updates } = body;
+    const { locationId, column, updates, tanggalUpdate } = body;
 
     if (!locationId || !column || !updates) {
       return NextResponse.json(
@@ -50,13 +50,20 @@ export async function PUT(request: NextRequest) {
 
     const sheets = google.sheets({ version: 'v4', auth });
 
-    // Build batch update - monitor data starts at row 32
+    // Build batch update - monitor data starts at row 36
     const batchUpdates = updates.map((update: { no: string; value: string }) => {
-      const rowNumber = parseInt(update.no) + 31; // Row 32 is first data row
+      const rowNumber = parseInt(update.no) + 35; // Row 36 is first data row
       return {
         range: `CCTV!${columnLetter}${rowNumber}`,
         values: [[update.value]],
       };
+    });
+
+    // Stamp update date to K3
+    const currentDate = (tanggalUpdate || new Date().toISOString().split('T')[0]).toString();
+    batchUpdates.push({
+      range: 'CCTV!K3',
+      values: [[currentDate]],
     });
 
     await sheets.spreadsheets.values.batchUpdate({

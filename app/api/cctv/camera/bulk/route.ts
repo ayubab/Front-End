@@ -21,7 +21,7 @@ const COLUMN_MAP: Record<string, string> = {
 export async function PUT(request: NextRequest) {
   try {
     const body = await request.json();
-    const { locationId, column, updates } = body;
+    const { locationId, column, updates, tanggalUpdate } = body;
 
     if (!locationId || !column || !updates) {
       return NextResponse.json(
@@ -56,9 +56,9 @@ export async function PUT(request: NextRequest) {
 
     const sheets = google.sheets({ version: 'v4', auth });
 
-    // Build batch update - camera data starts at row 10
+    // Build batch update - camera data starts at row 15
     const batchUpdates = updates.map((update: { no: string; value: string }) => {
-      const rowNumber = parseInt(update.no) + 9; // Row 10 is first data row
+      const rowNumber = parseInt(update.no) + 14; // Row 15 is first data row
       return {
         range: `CCTV!${columnLetter}${rowNumber}`,
         values: [[update.value]],
@@ -66,7 +66,7 @@ export async function PUT(request: NextRequest) {
     });
 
     // Add current date to cell K3
-    const currentDate = new Date().toISOString().split('T')[0];
+    const currentDate = (tanggalUpdate || new Date().toISOString().split('T')[0]).toString();
     batchUpdates.push({
       range: 'CCTV!K3',
       values: [[currentDate]],

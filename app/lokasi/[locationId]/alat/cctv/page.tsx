@@ -45,6 +45,8 @@ export default function CCTVPage() {
   const [dvrData, setDvrData] = useState<DVRData[]>([]);
   const [cameraData, setCameraData] = useState<CameraData[]>([]);
   const [monitorData, setMonitorData] = useState<MonitorData[]>([]);
+  const [lastUpdateDate, setLastUpdateDate] = useState<string>('');
+  const [globalTanggal, setGlobalTanggal] = useState<string>('');
   const [loading, setLoading] = useState(true);
 
   // DVR editing states
@@ -61,6 +63,8 @@ export default function CCTVPage() {
 
   useEffect(() => {
     fetchCCTVData();
+    const today = new Date().toISOString().split('T')[0];
+    setGlobalTanggal(today);
   }, [locationId]);
 
   const fetchCCTVData = async () => {
@@ -72,6 +76,10 @@ export default function CCTVPage() {
         setDvrData(result.dvrData || []);
         setCameraData(result.cameraData || []);
         setMonitorData(result.monitorData || []);
+        if (result.lastUpdateDate) {
+          setLastUpdateDate(result.lastUpdateDate);
+          setGlobalTanggal(result.lastUpdateDate);
+        }
       }
     } catch (error) {
       console.error('Error fetching CCTV data:', error);
@@ -105,6 +113,7 @@ export default function CCTVPage() {
           locationId,
           column,
           updates,
+          tanggalUpdate: globalTanggal,
         }),
       });
 
@@ -148,6 +157,7 @@ export default function CCTVPage() {
           locationId,
           column,
           updates,
+          tanggalUpdate: globalTanggal,
         }),
       });
 
@@ -191,6 +201,7 @@ export default function CCTVPage() {
           locationId,
           column,
           updates,
+          tanggalUpdate: globalTanggal,
         }),
       });
 
@@ -229,6 +240,34 @@ export default function CCTVPage() {
         </button>
 
         <h1 className="text-3xl font-bold text-white mb-8">CCTV Management</h1>
+
+        {/* Tanggal Update */}
+        <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 bg-cyan-500 rounded-full flex items-center justify-center text-white text-2xl">
+              📅
+            </div>
+            <div className="flex-1">
+              <label className="block text-sm font-semibold text-gray-700 mb-1">
+                Tanggal Update (ditulis ke sel K3)
+              </label>
+              <input
+                type="date"
+                value={globalTanggal}
+                onChange={(e) => setGlobalTanggal(e.target.value)}
+                className="w-full max-w-xs border border-cyan-300 rounded-lg px-3 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-cyan-500"
+              />
+              <p className="text-xs text-gray-500 mt-1">
+                Nilai ini dikirim ke sel K3 setiap kali menyimpan perubahan DVR/Kamera/Monitor.
+              </p>
+              {lastUpdateDate && (
+                <p className="text-xs text-gray-600 mt-1">
+                  Terakhir tercatat di sheet: {lastUpdateDate}
+                </p>
+              )}
+            </div>
+          </div>
+        </div>
 
         {/* DVR/NVR/XVR Section */}
         <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
