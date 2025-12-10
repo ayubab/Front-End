@@ -25,7 +25,7 @@ async function getAuthClient() {
 
 export async function PUT(request: NextRequest) {
   try {
-    const { locationId, updates } = await request.json();
+    const { locationId, updates, tanggalUpdate } = await request.json();
 
     if (!locationId) {
       return NextResponse.json(
@@ -56,9 +56,9 @@ export async function PUT(request: NextRequest) {
     const batchData: any[] = [];
 
     for (const update of updates) {
-      const { rowIndex, jumlah, merk, kondisi, keterangan, tanggal } = update;
+      const { rowIndex, jumlah, merk, kondisi, keterangan } = update;
 
-      if (!rowIndex) continue;
+      if (rowIndex === undefined || rowIndex === null) continue;
 
       // Update Jumlah (column E)
       if (jumlah !== undefined) {
@@ -91,14 +91,6 @@ export async function PUT(request: NextRequest) {
           values: [[keterangan]],
         });
       }
-
-      // Update Tanggal (column I)
-      if (tanggal !== undefined) {
-        batchData.push({
-          range: `APD!I${rowIndex}`,
-          values: [[tanggal]],
-        });
-      }
     }
 
     if (batchData.length === 0) {
@@ -108,8 +100,8 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    // Add current date to cell H3
-    const currentDate = new Date().toISOString().split('T')[0];
+    // Add current date (or provided date) to cell H3
+    const currentDate = (tanggalUpdate || new Date().toISOString().split('T')[0]).toString();
     batchData.push({
       range: 'APD!H3',
       values: [[currentDate]],

@@ -62,52 +62,74 @@ export async function GET(request: NextRequest) {
     const authClient = await getAuthClient();
     const sheets = google.sheets({ version: 'v4', auth: authClient as any });
 
-    // Fetch headers from row 4 (A4:I4)
-    const headersResponse = await sheets.spreadsheets.values.get({
-      spreadsheetId: SHEET_ID,
-      range: 'APD!A4:I4',
-    });
+    // Fetch headers from row 4 (A4:H4) and last update date (H3)
+    const [headersResponse, lastUpdateResponse] = await Promise.all([
+      sheets.spreadsheets.values.get({
+        spreadsheetId: SHEET_ID,
+        range: 'APD!A4:H4',
+      }),
+      sheets.spreadsheets.values.get({
+        spreadsheetId: SHEET_ID,
+        range: 'APD!H3',
+      }),
+    ]);
 
     const headers = headersResponse.data.values?.[0] || [];
+    const lastUpdateDate = lastUpdateResponse.data.values?.[0]?.[0] || '';
     
-    // Create field metadata from headers
+    // Create field metadata from headers (focus on editable columns)
+    const editableColumnMapping = [
+      'jenisAPD',
+      'jenisAPD',
+      'jenisAPD',
+      null,
+      'jumlah',
+      'merk',
+      'kondisi',
+      'keterangan',
+    ];
     const fieldMetadata: { [key: string]: string[] | null } = {};
     headers.forEach((header, index) => {
-      const columnName = ['no', 'jenisAPD', 'jumlahMinimal', 'gap', 'jumlah', 'merk', 'kondisi', 'keterangan', 'tanggal'][index];
-      if (columnName && columnName !== 'gap') {
-        const choices = parseChoices(header);
-        if (choices) {
-          fieldMetadata[columnName] = choices;
-        }
+      const columnName = editableColumnMapping[index];
+      if (!columnName || columnName === 'jenisAPD') return;
+      const choices = parseChoices(header);
+      if (choices) {
+        fieldMetadata[columnName] = choices;
       }
     });
 
-    // Fetch all data starting from row 6 (A6:I100)
+    // Fetch all data starting from row 5 (A5:H200)
     const dataResponse = await sheets.spreadsheets.values.get({
       spreadsheetId: SHEET_ID,
-      range: 'APD!A6:I100',
+      range: 'APD!A5:H200',
     });
 
     const rows = dataResponse.data.values || [];
     const apdData: any[] = [];
 
+    const categoryRows = new Set([5, 10, 13, 17, 20, 27, 29, 31]);
     rows.forEach((row, index) => {
-      const rowIndex = index + 6; // Actual row number in sheet
-      const [no, jenisAPD, jumlahMinimal, gap, jumlah, merk, kondisi, keterangan, tanggal] = row;
+      const rowIndex = index + 5; // Actual row number in sheet
+      const jenisAPD = (row[0] || row[1] || row[2] || '').toString();
+      const jumlah = row[4]?.toString() || '';
+      const merk = row[5]?.toString() || '';
+      const kondisi = row[6]?.toString() || '';
+      const keterangan = row[7]?.toString() || '';
 
-      // Category rows have empty "no" but have jenisAPD
-      const isCategory = !no && jenisAPD;
+      // Skip completely empty rows
+      if (!jenisAPD && !jumlah && !merk && !kondisi && !keterangan) {
+        return;
+      }
+
+      const isCategory = categoryRows.has(rowIndex) || (jenisAPD && !jumlah && !merk && !kondisi && !keterangan);
 
       apdData.push({
         rowIndex,
-        no: no || '',
-        jenisAPD: jenisAPD || '',
-        jumlahMinimal: jumlahMinimal || '',
-        jumlah: jumlah || '',
-        merk: merk || '',
-        kondisi: kondisi || '',
-        keterangan: keterangan || '',
-        tanggal: tanggal || '',
+        jenisAPD,
+        jumlah,
+        merk,
+        kondisi,
+        keterangan,
         isCategory,
       });
     });
@@ -116,6 +138,7 @@ export async function GET(request: NextRequest) {
       success: true,
       data: apdData,
       fieldMetadata,
+      lastUpdateDate,
     });
   } catch (error) {
     console.error('Error fetching APD data:', error);
