@@ -6,6 +6,7 @@ import { getLocationById } from '@/lib/data';
 
 interface LimbahItem {
   rowIndex: number;
+  no: string;
   jenisLimbah: string;
   jumlah: string;
 }

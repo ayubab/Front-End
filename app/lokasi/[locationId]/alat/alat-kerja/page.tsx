@@ -6,8 +6,10 @@ import { getLocationById } from '@/lib/data';
 
 interface AlatKerjaItem {
   rowIndex: number;
+  no: string;
   namaPeralatan: string;
   satuan: string;
+  jumlahMinimum: string;
   jumlah: string;
   merk: string;
   tahunPerolehan: string;

@@ -302,7 +302,7 @@ export default function APDStdPage() {
                   {apdData.map((item, index) => (
                     item.isCategory ? (
                       <tr key={index} className="bg-cyan-50">
-                        <td colSpan={9} className="px-3 py-2 text-xs font-bold text-cyan-900">
+                        <td colSpan={8} className="px-3 py-2 text-xs font-bold text-cyan-900">
                           {item.itemPeralatan}
                         </td>
                       </tr>
@@ -311,13 +311,6 @@ export default function APDStdPage() {
                         <td className="px-3 py-2 text-xs text-gray-600 sticky left-0 bg-white">{item.itemPeralatan}</td>
                         <td className="px-3 py-2 text-xs text-gray-900">{item.apd}</td>
                         <td className="px-3 py-2 text-xs text-gray-600">{item.satuan}</td>
-                        <td className="px-3 py-2">
-                          {editingGis ? (
-                            <input type="text" value={editedGis[item.rowIndex] ?? item.gis} onChange={(e) => setEditedGis({ ...editedGis, [item.rowIndex]: e.target.value })} className="w-20 px-2 py-1 text-xs border border-gray-300 rounded focus:ring-2 focus:ring-cyan-500 focus:outline-none text-gray-900" />
-                          ) : (
-                            <span className="text-xs text-gray-900">{item.gis || '-'}</span>
-                          )}
-                        </td>
                         <td className="px-3 py-2">
                           {editingBaik ? (
                             <input type="text" value={editedBaik[item.rowIndex] ?? item.baik} onChange={(e) => setEditedBaik({ ...editedBaik, [item.rowIndex]: e.target.value })} className="w-20 px-2 py-1 text-xs border border-gray-300 rounded focus:ring-2 focus:ring-cyan-500 focus:outline-none text-gray-900" />
