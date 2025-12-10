@@ -46,41 +46,59 @@ export async function GET(request: NextRequest) {
     const authClient = await getAuthClient();
     const sheets = google.sheets({ version: 'v4', auth: authClient as any });
 
-    // Fetch headers from row 5 (A5:J5)
-    const headersResponse = await sheets.spreadsheets.values.get({
-      spreadsheetId: SHEET_ID,
-      range: 'APD STD!A5:J5',
-    });
+    // Fetch headers and last update date (K5)
+    const [headersResponse, lastUpdateResponse, dataResponse] = await Promise.all([
+      sheets.spreadsheets.values.get({
+        spreadsheetId: SHEET_ID,
+        range: 'APD STD!A5:J5',
+      }),
+      sheets.spreadsheets.values.get({
+        spreadsheetId: SHEET_ID,
+        range: 'APD STD!K5',
+      }),
+      // Fetch all data starting from row 6 (A6:J120)
+      sheets.spreadsheets.values.get({
+        spreadsheetId: SHEET_ID,
+        range: 'APD STD!A6:J120',
+      }),
+    ]);
 
     const headers = headersResponse.data.values?.[0] || [];
-
-    // Fetch all data starting from row 6 (A6:J150)
-    const dataResponse = await sheets.spreadsheets.values.get({
-      spreadsheetId: SHEET_ID,
-      range: 'APD STD!A6:J150',
-    });
+    const lastUpdateDate = lastUpdateResponse.data.values?.[0]?.[0] || '';
 
     const rows = dataResponse.data.values || [];
     const apdData: any[] = [];
 
+    const categoryStartRows = new Set([6, 11, 15, 20, 22, 27, 32, 36, 42, 46, 50, 63]);
     rows.forEach((row, index) => {
       const rowIndex = index + 6; // Actual row number in sheet
-      const [itemPeralatan, apd, satuan, gis, gap, baik, rusak, merk, tahunPerolehan, keterangan] = row;
+      const itemPeralatan = row[0]?.toString() || '';
+      const apd = row[1]?.toString() || '';
+      const satuan = row[2]?.toString() || '';
+      const baik = row[5]?.toString() || '';
+      const rusak = row[6]?.toString() || '';
+      const merk = row[7]?.toString() || '';
+      const tahunPerolehan = row[8]?.toString() || '';
+      const keterangan = row[9]?.toString() || '';
 
-      // Category rows have itemPeralatan but no apd
-      const isCategory = itemPeralatan && !apd;
+      // Category rows are predefined start rows or rows without APD detail
+      const isCategory = categoryStartRows.has(rowIndex) || (itemPeralatan && !apd && !baik && !rusak && !merk && !tahunPerolehan && !keterangan);
+
+      // Skip completely empty rows
+      if (!itemPeralatan && !apd && !baik && !rusak && !merk && !tahunPerolehan && !keterangan) {
+        return;
+      }
 
       apdData.push({
         rowIndex,
-        itemPeralatan: itemPeralatan || '',
-        apd: apd || '',
-        satuan: satuan || '',
-        gis: gis || '',
-        baik: baik || '',
-        rusak: rusak || '',
-        merk: merk || '',
-        tahunPerolehan: tahunPerolehan || '',
-        keterangan: keterangan || '',
+        itemPeralatan,
+        apd,
+        satuan,
+        baik,
+        rusak,
+        merk,
+        tahunPerolehan,
+        keterangan,
         isCategory,
       });
     });
@@ -89,6 +107,7 @@ export async function GET(request: NextRequest) {
       success: true,
       data: apdData,
       fieldMetadata: {},
+      lastUpdateDate,
     });
   } catch (error) {
     console.error('Error fetching APD STD data:', error);

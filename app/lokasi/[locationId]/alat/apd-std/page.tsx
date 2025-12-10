@@ -9,7 +9,6 @@ interface APDStdItem {
   itemPeralatan: string;
   apd: string;
   satuan: string;
-  gis: string;
   baik: string;
   rusak: string;
   merk: string;
@@ -30,20 +29,20 @@ export default function APDStdPage() {
 
   const [apdData, setApdData] = useState<APDStdItem[]>([]);
   const [fieldMetadata, setFieldMetadata] = useState<FieldMetadata>({});
+  const [lastUpdateDate, setLastUpdateDate] = useState<string>('');
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
-  const [editingGis, setEditingGis] = useState(false);
   const [editingBaik, setEditingBaik] = useState(false);
   const [editingRusak, setEditingRusak] = useState(false);
   const [editingMerk, setEditingMerk] = useState(false);
   const [editingTahun, setEditingTahun] = useState(false);
   const [editingKeterangan, setEditingKeterangan] = useState(false);
-  const [editedGis, setEditedGis] = useState<{[rowIndex: number]: string}>({});
   const [editedBaik, setEditedBaik] = useState<{[rowIndex: number]: string}>({});
   const [editedRusak, setEditedRusak] = useState<{[rowIndex: number]: string}>({});
   const [editedMerk, setEditedMerk] = useState<{[rowIndex: number]: string}>({});
   const [editedTahun, setEditedTahun] = useState<{[rowIndex: number]: string}>({});
   const [editedKeterangan, setEditedKeterangan] = useState<{[rowIndex: number]: string}>({});
+  const [globalTanggal, setGlobalTanggal] = useState<string>('');
 
   useEffect(() => {
     const isLoggedIn = localStorage.getItem('isLoggedIn');
@@ -51,6 +50,8 @@ export default function APDStdPage() {
       router.push('/login');
     } else {
       fetchAPDStdData();
+      const today = new Date().toISOString().split('T')[0];
+      setGlobalTanggal(today);
     }
   }, [router, locationId]);
 
@@ -64,6 +65,10 @@ export default function APDStdPage() {
         setApdData(result.data);
         if (result.fieldMetadata) {
           setFieldMetadata(result.fieldMetadata);
+        }
+        if (result.lastUpdateDate) {
+          setLastUpdateDate(result.lastUpdateDate);
+          setGlobalTanggal(result.lastUpdateDate);
         }
       } else {
         alert('Gagal memuat data APD STD');
@@ -81,7 +86,7 @@ export default function APDStdPage() {
   };
 
   const createColumnEditHandlers = (
-    column: 'gis' | 'baik' | 'rusak' | 'merk' | 'tahunPerolehan' | 'keterangan',
+    column: 'baik' | 'rusak' | 'merk' | 'tahunPerolehan' | 'keterangan',
     setEditing: (val: boolean) => void,
     setEditedData: (data: {[key: number]: string}) => void
   ) => {
@@ -111,7 +116,7 @@ export default function APDStdPage() {
           const response = await fetch('/api/apd-std/bulk', {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ locationId, updates }),
+            body: JSON.stringify({ locationId, updates, tanggalUpdate: globalTanggal }),
           });
 
           const result = await response.json();
@@ -141,7 +146,6 @@ export default function APDStdPage() {
     };
   };
 
-  const gisHandlers = createColumnEditHandlers('gis', setEditingGis, setEditedGis);
   const baikHandlers = createColumnEditHandlers('baik', setEditingBaik, setEditedBaik);
   const rusakHandlers = createColumnEditHandlers('rusak', setEditingRusak, setEditedRusak);
   const merkHandlers = createColumnEditHandlers('merk', setEditingMerk, setEditedMerk);
@@ -185,6 +189,34 @@ export default function APDStdPage() {
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto p-6">
+        {/* Global Tanggal Update */}
+        <div className="bg-white rounded-xl shadow-lg p-4 mb-6">
+          <div className="flex items-center gap-4">
+            <div className="w-10 h-10 bg-cyan-500 rounded-full flex items-center justify-center flex-shrink-0">
+              <span className="text-2xl">📅</span>
+            </div>
+            <div className="flex-1">
+              <label className="block text-sm font-semibold text-gray-700 mb-1">
+                Tanggal Update (ditulis ke sel K5)
+              </label>
+              <input
+                type="date"
+                value={globalTanggal}
+                onChange={(e) => setGlobalTanggal(e.target.value)}
+                className="w-full max-w-xs px-3 py-2 rounded-lg border border-cyan-300 focus:outline-none focus:ring-2 focus:ring-cyan-500 text-gray-900 bg-white shadow-sm"
+              />
+              <p className="text-xs text-gray-500 mt-1">
+                💡 Nilai ini dikirim ke sel K5 setiap kali menyimpan perubahan.
+              </p>
+              {lastUpdateDate && (
+                <p className="text-xs text-gray-600 mt-1">
+                  Terakhir tercatat di sheet: {lastUpdateDate}
+                </p>
+              )}
+            </div>
+          </div>
+        </div>
+
         <div className="bg-white rounded-xl shadow-xl overflow-hidden">
           {loading ? (
             <div className="p-12 text-center">
@@ -201,20 +233,7 @@ export default function APDStdPage() {
                     <th className="px-3 py-2 text-left text-xs font-semibold text-gray-700 uppercase">Satuan</th>
                     <th className="px-3 py-2 text-left text-xs font-semibold text-gray-700 uppercase">
                       <div className="flex items-center justify-between gap-2">
-                        <span>GIS/GI/GITET</span>
-                        {editingGis ? (
-                          <div className="flex gap-1">
-                            <button onClick={() => gisHandlers.save(editedGis)} disabled={updating} className="px-2 py-1 bg-green-600 text-white text-xs rounded hover:bg-green-700 disabled:opacity-50">✓</button>
-                            <button onClick={gisHandlers.cancel} disabled={updating} className="px-2 py-1 bg-gray-400 text-white text-xs rounded hover:bg-gray-500 disabled:opacity-50">✕</button>
-                          </div>
-                        ) : (
-                          <button onClick={gisHandlers.edit} className="px-2 py-1 bg-cyan-600 text-white text-xs rounded hover:bg-cyan-700">Edit</button>
-                        )}
-                      </div>
-                    </th>
-                    <th className="px-3 py-2 text-left text-xs font-semibold text-gray-700 uppercase">
-                      <div className="flex items-center justify-between gap-2">
-                        <span>BAIK</span>
+                        <span>BAIK (Jumlah)</span>
                         {editingBaik ? (
                           <div className="flex gap-1">
                             <button onClick={() => baikHandlers.save(editedBaik)} disabled={updating} className="px-2 py-1 bg-green-600 text-white text-xs rounded hover:bg-green-700 disabled:opacity-50">✓</button>
@@ -253,7 +272,7 @@ export default function APDStdPage() {
                     </th>
                     <th className="px-3 py-2 text-left text-xs font-semibold text-gray-700 uppercase">
                       <div className="flex items-center justify-between gap-2">
-                        <span>TAHUN</span>
+                        <span>TAHUN PEROLEHAN</span>
                         {editingTahun ? (
                           <div className="flex gap-1">
                             <button onClick={() => tahunHandlers.save(editedTahun)} disabled={updating} className="px-2 py-1 bg-green-600 text-white text-xs rounded hover:bg-green-700 disabled:opacity-50">✓</button>

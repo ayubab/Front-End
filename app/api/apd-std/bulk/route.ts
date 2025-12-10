@@ -25,7 +25,7 @@ async function getAuthClient() {
 
 export async function PUT(request: NextRequest) {
   try {
-    const { locationId, updates } = await request.json();
+    const { locationId, updates, tanggalUpdate } = await request.json();
 
     if (!locationId) {
       return NextResponse.json(
@@ -56,17 +56,9 @@ export async function PUT(request: NextRequest) {
     const batchData: any[] = [];
 
     for (const update of updates) {
-      const { rowIndex, gis, baik, rusak, merk, tahun, keterangan } = update;
+      const { rowIndex, baik, rusak, merk, tahun, keterangan } = update;
 
-      if (!rowIndex) continue;
-
-      // Update GIS/GI/GITET (column D)
-      if (gis !== undefined) {
-        batchData.push({
-          range: `APD STD!D${rowIndex}`,
-          values: [[gis]],
-        });
-      }
+      if (rowIndex === undefined || rowIndex === null) continue;
 
       // Update BAIK (column F)
       if (baik !== undefined) {
@@ -116,8 +108,8 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    // Add current date to cell K5
-    const currentDate = new Date().toISOString().split('T')[0];
+    // Add current date (or provided date) to cell K5
+    const currentDate = (tanggalUpdate || new Date().toISOString().split('T')[0]).toString();
     batchData.push({
       range: 'APD STD!K5',
       values: [[currentDate]],
