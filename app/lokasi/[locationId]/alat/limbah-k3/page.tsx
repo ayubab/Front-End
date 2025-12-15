@@ -3,12 +3,14 @@
 import { useEffect, useState } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { getLocationById } from '@/lib/data';
+import PhotoUpload from '@/app/components/PhotoUpload';
 
 interface LimbahItem {
   rowIndex: number;
   no: string;
   jenisLimbah: string;
   jumlah: string;
+  fotoKondisi?: string;
 }
 
 interface LimbahLog {
@@ -255,6 +257,9 @@ export default function LimbahK3Page() {
                         )}
                       </div>
                     </th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase">
+                      📷 Foto
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200">
@@ -273,6 +278,24 @@ export default function LimbahK3Page() {
                         ) : (
                           <span className="text-sm font-semibold text-gray-900">{item.jumlah || '0'}</span>
                         )}
+                      </td>
+                      <td className="px-4 py-3">
+                        <PhotoUpload
+                          locationId={locationId}
+                          category="limbah-k3"
+                          itemId={`row-${item.rowIndex}`}
+                          rowIndex={item.rowIndex}
+                          currentPhotoUrl={item.fotoKondisi}
+                          compact={true}
+                          onUploadSuccess={(data) => {
+                            setLimbahData(prev => prev.map(d => 
+                              d.rowIndex === item.rowIndex 
+                                ? { ...d, fotoKondisi: data.thumbnailUrl } 
+                                : d
+                            ));
+                          }}
+                          onUploadError={(error) => alert(error)}
+                        />
                       </td>
                     </tr>
                   ))}

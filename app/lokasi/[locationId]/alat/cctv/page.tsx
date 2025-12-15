@@ -2,6 +2,7 @@
 
 import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import PhotoUpload from '@/app/components/PhotoUpload';
 
 interface DVRData {
   no: string;
@@ -27,6 +28,7 @@ interface CameraData {
   statusNormal: string;
   statusAnomali: string;
   keterangan: string;
+  fotoKondisi?: string;
 }
 
 interface MonitorData {
@@ -628,6 +630,9 @@ export default function CCTVPage() {
                       )}
                     </div>
                   </th>
+                  <th className="border border-gray-300 px-4 py-2">
+                    📷 Foto
+                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -757,6 +762,23 @@ export default function CCTVPage() {
                       ) : (
                         item.keterangan
                       )}
+                    </td>
+                    <td className="border border-gray-300 px-4 py-2">
+                      <PhotoUpload
+                        locationId={locationId}
+                        category="cctv"
+                        itemId={`camera-${item.no}`}
+                        currentPhotoUrl={item.fotoKondisi}
+                        compact={true}
+                        onUploadSuccess={(data) => {
+                          setCameraData(prev => prev.map(d => 
+                            d.no === item.no 
+                              ? { ...d, fotoKondisi: data.thumbnailUrl } 
+                              : d
+                          ));
+                        }}
+                        onUploadError={(error) => alert(error)}
+                      />
                     </td>
                   </tr>
                 ))}
