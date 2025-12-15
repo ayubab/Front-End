@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { getLocationById } from '@/lib/data';
+import PhotoUpload from '@/app/components/PhotoUpload';
 
 interface APDItem {
   rowIndex: number;
@@ -11,6 +12,7 @@ interface APDItem {
   merk: string;
   kondisi: string;
   keterangan: string;
+  fotoKondisi?: string;
   isCategory: boolean;
 }
 
@@ -466,13 +468,16 @@ export default function APDPage() {
                         )}
                       </div>
                     </th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase">
+                      📷 Foto Kondisi
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200">
                   {apdData.map((item, index) => (
                     item.isCategory ? (
                       <tr key={index} className="bg-cyan-50">
-                        <td colSpan={5} className="px-4 py-3 text-sm font-bold text-cyan-900">
+                        <td colSpan={6} className="px-4 py-3 text-sm font-bold text-cyan-900">
                           {item.jenisAPD}
                         </td>
                       </tr>
@@ -546,6 +551,25 @@ export default function APDPage() {
                           ) : (
                             <span className="text-sm text-gray-600">{item.keterangan || '-'}</span>
                           )}
+                        </td>
+                        <td className="px-4 py-3">
+                          <PhotoUpload
+                            locationId={locationId}
+                            category="apd"
+                            itemId={`row-${item.rowIndex}`}
+                            rowIndex={item.rowIndex}
+                            currentPhotoUrl={item.fotoKondisi}
+                            compact={true}
+                            onUploadSuccess={(data) => {
+                              // Update local state with new photo URL
+                              setApdData(prev => prev.map(d => 
+                                d.rowIndex === item.rowIndex 
+                                  ? { ...d, fotoKondisi: data.thumbnailUrl } 
+                                  : d
+                              ));
+                            }}
+                            onUploadError={(error) => alert(error)}
+                          />
                         </td>
                       </tr>
                     )

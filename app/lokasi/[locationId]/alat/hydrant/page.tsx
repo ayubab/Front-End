@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { getLocationById } from '@/lib/data';
+import PhotoUpload from '@/app/components/PhotoUpload';
 
 interface PumpInfo {
   columnB: string;
@@ -31,6 +32,7 @@ interface HydrantItem {
   tanggalPengecekan: string;
   keterangan: string;
   linkLks: string;
+  fotoKondisi?: string;
 }
 
 interface FieldMetadata {
@@ -772,6 +774,9 @@ export default function HydrantPage() {
                         )}
                       </div>
                     </th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase">
+                      📷 Foto
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200">
@@ -882,6 +887,24 @@ export default function HydrantPage() {
                             </div>
                           )}
                         </div>
+                      </td>
+                      <td className="px-4 py-4">
+                        <PhotoUpload
+                          locationId={locationId}
+                          category="hydrant"
+                          itemId={`row-${item.rowIndex}`}
+                          rowIndex={item.rowIndex}
+                          currentPhotoUrl={item.fotoKondisi}
+                          compact={true}
+                          onUploadSuccess={(data) => {
+                            setHydrantData(prev => prev.map(d => 
+                              d.rowIndex === item.rowIndex 
+                                ? { ...d, fotoKondisi: data.thumbnailUrl } 
+                                : d
+                            ));
+                          }}
+                          onUploadError={(error) => alert(error)}
+                        />
                       </td>
                     </tr>
                   ))}
