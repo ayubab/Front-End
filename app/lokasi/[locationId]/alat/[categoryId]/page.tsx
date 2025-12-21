@@ -55,6 +55,7 @@ export default function DaftarItemPage() {
 
       if (response.ok) {
         alert('Data berhasil disimpan!');
+        (e.target as HTMLFormElement).reset(); // Reset form for new entry
         setSelectedItem(null);
       } else {
         alert('Gagal menyimpan data. Coba lagi.');
