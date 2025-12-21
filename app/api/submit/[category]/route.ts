@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { google } from 'googleapis';
+import { Readable } from 'stream';
 
 // Helper function to get sheet ID based on location
 function getSheetIdForLocation(locationId: string): string {
@@ -34,20 +35,25 @@ async function uploadToDrive(file: File, auth: any): Promise<string | null> {
 
     // Only add parents if folder ID is specified
     const folderId = process.env.GOOGLE_DRIVE_FOLDER_ID;
+    console.log('Using Drive folder ID:', folderId);
     if (folderId && folderId.trim()) {
       fileMetadata.parents = [folderId.trim()];
     }
 
     const media = {
       mimeType: file.type,
-      body: buffer,
+      body: Readable.from(buffer),
     };
 
+    console.log('Uploading to Google Drive...');
     const response = await drive.files.create({
       requestBody: fileMetadata,
       media: media,
       fields: 'id',
+      supportsAllDrives: true,
     });
+
+    console.log('File created, ID:', response.data.id);
 
     // Make file publicly accessible
     await drive.permissions.create({
@@ -56,8 +62,10 @@ async function uploadToDrive(file: File, auth: any): Promise<string | null> {
         role: 'reader',
         type: 'anyone',
       },
+      supportsAllDrives: true,
     });
 
+    console.log('Permissions set, upload complete');
     return response.data.id!;
   } catch (error) {
     console.error('Error uploading to Drive:', error);
@@ -235,9 +243,9 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     const sheets = google.sheets({ version: 'v4', auth });
 
     // Handle photo upload if present
-    let photoFormula = '';
+    let photoUrl = '';
     if (data.ambilFoto instanceof File) {
-      console.log('Uploading photo to Google Drive...', {
+      console.log('Uploading photo...', {
         fileName: data.ambilFoto.name,
         fileSize: data.ambilFoto.size,
         fileType: data.ambilFoto.type
@@ -245,15 +253,15 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       const fileId = await uploadToDrive(data.ambilFoto, auth);
       if (fileId) {
         // Create IMAGE formula for Google Sheets using direct download link
-        photoFormula = `=IMAGE("https://drive.google.com/uc?export=view&id=${fileId}", 1)`;
-        console.log('Photo uploaded successfully, formula:', photoFormula);
+        photoUrl = `=IMAGE("https://drive.google.com/uc?export=view&id=${fileId}"; 1)`;
+        console.log('Photo uploaded successfully:', photoUrl);
       } else {
-        photoFormula = 'Upload gagal';
+        photoUrl = 'Upload gagal';
         console.error('Failed to upload photo');
       }
     } else {
-      photoFormula = data.ambilFoto || '';
-      console.log('No photo file found, using text:', photoFormula);
+      photoUrl = data.ambilFoto || '';
+      console.log('No photo file found, using text:', photoUrl);
     }
 
     // Create row data in the exact order matching sheet columns (including ID column)
@@ -273,14 +281,14 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
           (data as any).tipe,             // F: TIPE
           (data as any).kapasitas,        // G: KAPASITAS (KG)
           (data as any).jenis,            // H: JENIS
-          (data as any).tanggalInspeksi,  // I: TANGGAL INSPEKSI
+          `'${(data as any).tanggalInspeksi}`,  // I: TANGGAL INSPEKSI (apostrophe prefix keeps as text)
           (data as any).bahanPemadam,     // J: BAHAN PEMADAM
           (data as any).kelasKebakaran,   // K: KELAS KEBAKARAN
-          (data as any).tanggalPengisian, // L: TANGGAL PENGISIAN
-          (data as any).kadaluarsa,       // M: KADALUARSA
+          `'${(data as any).tanggalPengisian}`, // L: TANGGAL PENGISIAN (apostrophe prefix keeps as text)
+          `'${(data as any).kadaluarsa}`,       // M: KADALUARSA (apostrophe prefix keeps as text)
           (data as any).kondi,            // N: KONDISI
           (data as any).keterangan,       // O: KETERANGAN
-          photoFormula                    // P: Foto
+          photoUrl                    // P: Foto
         ];
         break;
 
@@ -327,7 +335,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
           (data as any).tanggalInspeksi,
           (data as any).kondi,
           (data as any).keterangan,
-          photoFormula
+          photoUrl
         ];
         break;
 
@@ -345,7 +353,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
           (data as any).tanggalInspeksi,
           (data as any).kondi,
           (data as any).keterangan,
-          photoFormula
+          photoUrl
         ];
         break;
 
@@ -363,7 +371,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
           (data as any).tanggalInspeksi,
           (data as any).kondi,
           (data as any).keterangan,
-          photoFormula
+          photoUrl
         ];
         break;
 
@@ -381,7 +389,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
           (data as any).tanggalInspeksi,
           (data as any).kondi,
           (data as any).keterangan,
-          photoFormula
+          photoUrl
         ];
         break;
 
@@ -399,7 +407,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
           (data as any).tanggalInspeksi,
           (data as any).kondi,
           (data as any).keterangan,
-          photoFormula
+          photoUrl
         ];
         break;
 
@@ -417,7 +425,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
           (data as any).tanggalInspeksi,
           (data as any).kondi,
           (data as any).keterangan,
-          photoFormula
+          photoUrl
         ];
         break;
 
@@ -434,7 +442,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
           (data as any).tanggalInspeksi,
           (data as any).kondi,
           (data as any).keterangan,
-          photoFormula
+          photoUrl
         ];
         break;
 
@@ -447,20 +455,24 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
 
     // Determine sheet name based on category
     const sheetName = getSheetName(category);
+    console.log('Sheet name:', sheetName, 'Spreadsheet ID:', spreadsheetId);
 
     // Check if sheet exists, create it if not
     await ensureSheetExists(sheets, spreadsheetId, sheetName);
+    console.log('Sheet exists check passed');
 
     // Append to Google Sheet (automatically adds to bottom row, starting from column A with ID)
-    await sheets.spreadsheets.values.append({
+    console.log('Appending row data:', rowData);
+    const appendResult = await sheets.spreadsheets.values.append({
       spreadsheetId,
       range: `${sheetName}!A:${String.fromCharCode(65 + rowData.length - 1)}`, // Start from column A, dynamic end column
-      valueInputOption: 'RAW',
+      valueInputOption: 'USER_ENTERED', // Changed from RAW to USER_ENTERED so IMAGE formulas work
       insertDataOption: 'INSERT_ROWS',
       requestBody: {
         values: [rowData],
       },
     });
+    console.log('Append result:', appendResult.data);
 
     return NextResponse.json({
       success: true,
