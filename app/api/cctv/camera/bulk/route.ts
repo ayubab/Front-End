@@ -1,9 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { google } from 'googleapis';
 
-const LOCATION_SHEET_MAP: Record<string, string> = {
-  'bantul': '1D8l34AInFL-lqWpualties4-xS15jNaL9nymCTQ9YqV8',
-};
+import { getSheetIdForLocation } from '@/lib/sheets';
 
 const COLUMN_MAP: Record<string, string> = {
   idKamera: 'B',
@@ -30,10 +28,10 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    const spreadsheetId = LOCATION_SHEET_MAP[locationId.toLowerCase()];
+    const spreadsheetId = getSheetIdForLocation(locationId);
     if (!spreadsheetId) {
       return NextResponse.json(
-        { success: false, error: 'Invalid location' },
+        { success: false, error: 'Sheet ID not found for location' },
         { status: 400 }
       );
     }
@@ -47,10 +45,7 @@ export async function PUT(request: NextRequest) {
     }
 
     const auth = new google.auth.GoogleAuth({
-      credentials: {
-        client_email: process.env.GOOGLE_CLIENT_EMAIL,
-        private_key: process.env.GOOGLE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
-      },
+      credentials: JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT_KEY || '{}'),
       scopes: ['https://www.googleapis.com/auth/spreadsheets'],
     });
 

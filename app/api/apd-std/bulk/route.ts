@@ -3,16 +3,7 @@ import { google } from 'googleapis';
 
 const SCOPES = ['https://www.googleapis.com/auth/spreadsheets'];
 
-// Location-specific sheet IDs
-const LOCATION_SHEET_MAP: { [key: string]: string } = {
-  'k3-apd': process.env.SHEET_ID_K3_APD || '',
-  'k3-apar': process.env.SHEET_ID_K3_APAR || '',
-  'k3-p3k': process.env.SHEET_ID_K3_P3K || '',
-};
-
-const getSheetIdForLocation = (locationId: string): string => {
-  return LOCATION_SHEET_MAP[locationId] || process.env.NEXT_PUBLIC_SHEET_ID || '';
-};
+import { getSheetIdForLocation } from '@/lib/sheets';
 
 async function getAuthClient() {
   const credentials = JSON.parse(process.env.GOOGLE_CREDENTIALS || '{}');
