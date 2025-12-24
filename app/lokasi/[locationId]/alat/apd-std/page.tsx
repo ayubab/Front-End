@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { getLocationById } from '@/lib/data';
 import PhotoUpload from '@/app/components/PhotoUpload';
+import Image from 'next/image';
 
 interface APDStdItem {
   rowIndex: number;
@@ -19,9 +20,69 @@ interface APDStdItem {
   isCategory: boolean;
 }
 
+interface ExampleItem {
+  itemPeralatan: string;
+  apd: string;
+  satuan: string;
+  gi: string;
+}
+
 interface FieldMetadata {
   [key: string]: string[] | null;
 }
+
+// Example data for reference (left table - gray)
+const EXAMPLE_DATA: ExampleItem[] = [
+  // ALAT PELINDUNG KEPALA
+  { itemPeralatan: 'ALAT PELINDUNG KEPALA', apd: '', satuan: '', gi: '' },
+  { itemPeralatan: '', apd: 'Helm Kerja Lapangan', satuan: 'Buah', gi: '10' },
+  { itemPeralatan: '', apd: 'Helm Kerja Kantor (Topi)', satuan: 'Buah', gi: '5' },
+  { itemPeralatan: '', apd: 'Helm Las', satuan: 'Buah', gi: '2' },
+  { itemPeralatan: '', apd: 'Topi Pelindung', satuan: 'Buah', gi: '5' },
+  // ALAT PELINDUNG MATA DAN MUKA
+  { itemPeralatan: 'ALAT PELINDUNG MATA DAN MUKA', apd: '', satuan: '', gi: '' },
+  { itemPeralatan: '', apd: 'Kacamata Las', satuan: 'Buah', gi: '2' },
+  { itemPeralatan: '', apd: 'Kacamata Safety', satuan: 'Buah', gi: '10' },
+  { itemPeralatan: '', apd: 'Face Shield', satuan: 'Buah', gi: '3' },
+  // ALAT PELINDUNG TANGAN
+  { itemPeralatan: 'ALAT PELINDUNG TANGAN', apd: '', satuan: '', gi: '' },
+  { itemPeralatan: '', apd: 'Sarung Tangan Katun', satuan: 'Pasang', gi: '20' },
+  { itemPeralatan: '', apd: 'Sarung Tangan Kulit', satuan: 'Pasang', gi: '10' },
+  { itemPeralatan: '', apd: 'Sarung Tangan Listrik 20kV', satuan: 'Pasang', gi: '4' },
+  { itemPeralatan: '', apd: 'Sarung Tangan Listrik 150kV', satuan: 'Pasang', gi: '4' },
+  // ALAT PELINDUNG TELINGA
+  { itemPeralatan: 'ALAT PELINDUNG TELINGA', apd: '', satuan: '', gi: '' },
+  { itemPeralatan: '', apd: 'Ear Plug', satuan: 'Pasang', gi: '10' },
+  { itemPeralatan: '', apd: 'Ear Muff', satuan: 'Buah', gi: '5' },
+  // ALAT PELINDUNG KAKI
+  { itemPeralatan: 'ALAT PELINDUNG KAKI', apd: '', satuan: '', gi: '' },
+  { itemPeralatan: '', apd: 'Sepatu Safety', satuan: 'Pasang', gi: '10' },
+  { itemPeralatan: '', apd: 'Sepatu Boot Karet', satuan: 'Pasang', gi: '5' },
+  { itemPeralatan: '', apd: 'Sepatu Listrik', satuan: 'Pasang', gi: '4' },
+  // PAKAIAN PELINDUNG
+  { itemPeralatan: 'PAKAIAN PELINDUNG', apd: '', satuan: '', gi: '' },
+  { itemPeralatan: '', apd: 'Baju Kerja Lapangan', satuan: 'Stel', gi: '10' },
+  { itemPeralatan: '', apd: 'Jas Hujan', satuan: 'Buah', gi: '10' },
+  { itemPeralatan: '', apd: 'Apron Las', satuan: 'Buah', gi: '2' },
+  // ROMPI PENGAWAS
+  { itemPeralatan: 'ROMPI PENGAWAS', apd: '', satuan: '', gi: '' },
+  { itemPeralatan: '', apd: 'Rompi Safety', satuan: 'Buah', gi: '10' },
+  { itemPeralatan: '', apd: 'Rompi Pengawas K3', satuan: 'Buah', gi: '3' },
+  // ALAT PELINDUNG PERNAPASAN
+  { itemPeralatan: 'ALAT PELINDUNG PERNAPASAN', apd: '', satuan: '', gi: '' },
+  { itemPeralatan: '', apd: 'Masker Kain', satuan: 'Buah', gi: '20' },
+  { itemPeralatan: '', apd: 'Masker Gas (Respirator)', satuan: 'Buah', gi: '5' },
+  { itemPeralatan: '', apd: 'SCBA', satuan: 'Unit', gi: '1' },
+  // ALAT PELINDUNG JATUH
+  { itemPeralatan: 'ALAT PELINDUNG JATUH', apd: '', satuan: '', gi: '' },
+  { itemPeralatan: '', apd: 'Full Body Harness', satuan: 'Buah', gi: '5' },
+  { itemPeralatan: '', apd: 'Safety Belt', satuan: 'Buah', gi: '5' },
+  { itemPeralatan: '', apd: 'Tali Pengaman (Lanyard)', satuan: 'Buah', gi: '5' },
+  // PELAMPUNG
+  { itemPeralatan: 'PELAMPUNG', apd: '', satuan: '', gi: '' },
+  { itemPeralatan: '', apd: 'Pelampung (Life Jacket)', satuan: 'Buah', gi: '5' },
+  { itemPeralatan: '', apd: 'Ring Buoy', satuan: 'Buah', gi: '2' },
+];
 
 export default function APDStdPage() {
   const router = useRouter();
@@ -45,6 +106,8 @@ export default function APDStdPage() {
   const [editedTahun, setEditedTahun] = useState<{[rowIndex: number]: string}>({});
   const [editedKeterangan, setEditedKeterangan] = useState<{[rowIndex: number]: string}>({});
   const [globalTanggal, setGlobalTanggal] = useState<string>('');
+  const [showExampleTable, setShowExampleTable] = useState(true);
+  const [showColorImages, setShowColorImages] = useState(true);
 
   useEffect(() => {
     const isLoggedIn = localStorage.getItem('isLoggedIn');
@@ -179,18 +242,79 @@ export default function APDStdPage() {
               <p className="text-sm text-cyan-100">{location.name}</p>
             </div>
           </div>
-          <button
-            onClick={fetchAPDStdData}
-            disabled={loading}
-            className="px-4 py-2 bg-white/20 hover:bg-white/30 rounded-lg text-sm font-semibold transition-colors disabled:opacity-50"
-          >
-            {loading ? '⟳' : '🔄'} Refresh
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setShowColorImages(!showColorImages)}
+              className={`px-4 py-2 rounded-lg text-sm font-semibold transition-colors ${
+                showColorImages ? 'bg-white/30' : 'bg-white/10 hover:bg-white/20'
+              }`}
+            >
+              🎨 {showColorImages ? 'Sembunyikan' : 'Tampilkan'} Warna
+            </button>
+            <button
+              onClick={() => setShowExampleTable(!showExampleTable)}
+              className={`px-4 py-2 rounded-lg text-sm font-semibold transition-colors ${
+                showExampleTable ? 'bg-white/30' : 'bg-white/10 hover:bg-white/20'
+              }`}
+            >
+              📋 {showExampleTable ? 'Sembunyikan' : 'Tampilkan'} Contoh
+            </button>
+            <button
+              onClick={fetchAPDStdData}
+              disabled={loading}
+              className="px-4 py-2 bg-white/20 hover:bg-white/30 rounded-lg text-sm font-semibold transition-colors disabled:opacity-50"
+            >
+              {loading ? '⟳' : '🔄'} Refresh
+            </button>
+          </div>
         </div>
       </div>
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto p-6">
+        {/* Color Images Section */}
+        {showColorImages && (
+          <div className="mb-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Helm Colors */}
+            <div className="bg-white rounded-xl shadow-lg overflow-hidden">
+              <div className="bg-gradient-to-r from-yellow-400 to-orange-500 px-4 py-3">
+                <h3 className="text-white font-bold text-sm flex items-center gap-2">
+                  ⛑️ WARNA HELM SAFETY
+                </h3>
+              </div>
+              <div className="p-4">
+                <Image
+                  src="/helm.png"
+                  alt="Referensi Warna Helm Safety"
+                  width={400}
+                  height={200}
+                  className="w-full h-auto rounded-lg"
+                  priority
+                />
+              </div>
+            </div>
+            
+            {/* Rompi Colors */}
+            <div className="bg-white rounded-xl shadow-lg overflow-hidden">
+              <div className="bg-gradient-to-r from-green-400 to-teal-500 px-4 py-3">
+                <h3 className="text-white font-bold text-sm flex items-center gap-2">
+                  🦺 WARNA ROMPI SAFETY
+                </h3>
+              </div>
+              <div className="p-4">
+                <Image
+                  src="/rompi.png"
+                  alt="Referensi Warna Rompi Safety"
+                  width={400}
+                  height={200}
+                  className="w-full h-auto rounded-lg"
+                  priority
+                />
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Global Tanggal Update */}
         <div className="bg-white rounded-xl shadow-lg p-4 mb-6">
           <div className="flex items-center gap-4">
@@ -219,169 +343,222 @@ export default function APDStdPage() {
           </div>
         </div>
 
-        <div className="bg-white rounded-xl shadow-xl overflow-hidden">
-          {loading ? (
-            <div className="p-12 text-center">
-              <div className="text-cyan-600 text-xl mb-2">Memuat data...</div>
-              <div className="text-gray-500">Mohon tunggu sebentar</div>
-            </div>
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-3 py-2 text-left text-xs font-semibold text-gray-700 uppercase sticky left-0 bg-gray-50">Item/Peralatan</th>
-                    <th className="px-3 py-2 text-left text-xs font-semibold text-gray-700 uppercase">APD</th>
-                    <th className="px-3 py-2 text-left text-xs font-semibold text-gray-700 uppercase">Satuan</th>
-                    <th className="px-3 py-2 text-left text-xs font-semibold text-gray-700 uppercase">
-                      <div className="flex items-center justify-between gap-2">
-                        <span>BAIK (Jumlah)</span>
-                        {editingBaik ? (
-                          <div className="flex gap-1">
-                            <button onClick={() => baikHandlers.save(editedBaik)} disabled={updating} className="px-2 py-1 bg-green-600 text-white text-xs rounded hover:bg-green-700 disabled:opacity-50">✓</button>
-                            <button onClick={baikHandlers.cancel} disabled={updating} className="px-2 py-1 bg-gray-400 text-white text-xs rounded hover:bg-gray-500 disabled:opacity-50">✕</button>
-                          </div>
-                        ) : (
-                          <button onClick={baikHandlers.edit} className="px-2 py-1 bg-cyan-600 text-white text-xs rounded hover:bg-cyan-700">Edit</button>
-                        )}
-                      </div>
-                    </th>
-                    <th className="px-3 py-2 text-left text-xs font-semibold text-gray-700 uppercase">
-                      <div className="flex items-center justify-between gap-2">
-                        <span>RUSAK/KADALUARSA</span>
-                        {editingRusak ? (
-                          <div className="flex gap-1">
-                            <button onClick={() => rusakHandlers.save(editedRusak)} disabled={updating} className="px-2 py-1 bg-green-600 text-white text-xs rounded hover:bg-green-700 disabled:opacity-50">✓</button>
-                            <button onClick={rusakHandlers.cancel} disabled={updating} className="px-2 py-1 bg-gray-400 text-white text-xs rounded hover:bg-gray-500 disabled:opacity-50">✕</button>
-                          </div>
-                        ) : (
-                          <button onClick={rusakHandlers.edit} className="px-2 py-1 bg-cyan-600 text-white text-xs rounded hover:bg-cyan-700">Edit</button>
-                        )}
-                      </div>
-                    </th>
-                    <th className="px-3 py-2 text-left text-xs font-semibold text-gray-700 uppercase">
-                      <div className="flex items-center justify-between gap-2">
-                        <span>MERK/TYPE</span>
-                        {editingMerk ? (
-                          <div className="flex gap-1">
-                            <button onClick={() => merkHandlers.save(editedMerk)} disabled={updating} className="px-2 py-1 bg-green-600 text-white text-xs rounded hover:bg-green-700 disabled:opacity-50">✓</button>
-                            <button onClick={merkHandlers.cancel} disabled={updating} className="px-2 py-1 bg-gray-400 text-white text-xs rounded hover:bg-gray-500 disabled:opacity-50">✕</button>
-                          </div>
-                        ) : (
-                          <button onClick={merkHandlers.edit} className="px-2 py-1 bg-cyan-600 text-white text-xs rounded hover:bg-cyan-700">Edit</button>
-                        )}
-                      </div>
-                    </th>
-                    <th className="px-3 py-2 text-left text-xs font-semibold text-gray-700 uppercase">
-                      <div className="flex items-center justify-between gap-2">
-                        <span>TAHUN PEROLEHAN</span>
-                        {editingTahun ? (
-                          <div className="flex gap-1">
-                            <button onClick={() => tahunHandlers.save(editedTahun)} disabled={updating} className="px-2 py-1 bg-green-600 text-white text-xs rounded hover:bg-green-700 disabled:opacity-50">✓</button>
-                            <button onClick={tahunHandlers.cancel} disabled={updating} className="px-2 py-1 bg-gray-400 text-white text-xs rounded hover:bg-gray-500 disabled:opacity-50">✕</button>
-                          </div>
-                        ) : (
-                          <button onClick={tahunHandlers.edit} className="px-2 py-1 bg-cyan-600 text-white text-xs rounded hover:bg-cyan-700">Edit</button>
-                        )}
-                      </div>
-                    </th>
-                    <th className="px-3 py-2 text-left text-xs font-semibold text-gray-700 uppercase">
-                      <div className="flex items-center justify-between gap-2">
-                        <span>KET</span>
-                        {editingKeterangan ? (
-                          <div className="flex gap-1">
-                            <button onClick={() => keteranganHandlers.save(editedKeterangan)} disabled={updating} className="px-2 py-1 bg-green-600 text-white text-xs rounded hover:bg-green-700 disabled:opacity-50">✓</button>
-                            <button onClick={keteranganHandlers.cancel} disabled={updating} className="px-2 py-1 bg-gray-400 text-white text-xs rounded hover:bg-gray-500 disabled:opacity-50">✕</button>
-                          </div>
-                        ) : (
-                          <button onClick={keteranganHandlers.edit} className="px-2 py-1 bg-cyan-600 text-white text-xs rounded hover:bg-cyan-700">Edit</button>
-                        )}
-                      </div>
-                    </th>
-                    <th className="px-3 py-2 text-left text-xs font-semibold text-gray-700 uppercase">
-                      📷 Foto
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-200">
-                  {apdData.map((item, index) => (
-                    item.isCategory ? (
-                      <tr key={index} className="bg-cyan-50">
-                        <td colSpan={9} className="px-3 py-2 text-xs font-bold text-cyan-900">
-                          {item.itemPeralatan}
-                        </td>
-                      </tr>
-                    ) : (
-                      <tr key={index} className="hover:bg-gray-50">
-                        <td className="px-3 py-2 text-xs text-gray-600 sticky left-0 bg-white">{item.itemPeralatan}</td>
-                        <td className="px-3 py-2 text-xs text-gray-900">{item.apd}</td>
-                        <td className="px-3 py-2 text-xs text-gray-600">{item.satuan}</td>
-                        <td className="px-3 py-2">
-                          {editingBaik ? (
-                            <input type="text" value={editedBaik[item.rowIndex] ?? item.baik} onChange={(e) => setEditedBaik({ ...editedBaik, [item.rowIndex]: e.target.value })} className="w-20 px-2 py-1 text-xs border border-gray-300 rounded focus:ring-2 focus:ring-cyan-500 focus:outline-none text-gray-900" />
-                          ) : (
-                            <span className="text-xs font-semibold text-green-700">{item.baik || '-'}</span>
-                          )}
-                        </td>
-                        <td className="px-3 py-2">
-                          {editingRusak ? (
-                            <input type="text" value={editedRusak[item.rowIndex] ?? item.rusak} onChange={(e) => setEditedRusak({ ...editedRusak, [item.rowIndex]: e.target.value })} className="w-20 px-2 py-1 text-xs border border-gray-300 rounded focus:ring-2 focus:ring-cyan-500 focus:outline-none text-gray-900" />
-                          ) : (
-                            <span className="text-xs font-semibold text-red-700">{item.rusak || '-'}</span>
-                          )}
-                        </td>
-                        <td className="px-3 py-2">
-                          {editingMerk ? (
-                            <input type="text" value={editedMerk[item.rowIndex] ?? item.merk} onChange={(e) => setEditedMerk({ ...editedMerk, [item.rowIndex]: e.target.value })} className="w-full px-2 py-1 text-xs border border-gray-300 rounded focus:ring-2 focus:ring-cyan-500 focus:outline-none text-gray-900" />
-                          ) : (
-                            <span className="text-xs text-gray-900">{item.merk || '-'}</span>
-                          )}
-                        </td>
-                        <td className="px-3 py-2">
-                          {editingTahun ? (
-                            <input type="text" value={editedTahun[item.rowIndex] ?? item.tahunPerolehan} onChange={(e) => setEditedTahun({ ...editedTahun, [item.rowIndex]: e.target.value })} className="w-20 px-2 py-1 text-xs border border-gray-300 rounded focus:ring-2 focus:ring-cyan-500 focus:outline-none text-gray-900" />
-                          ) : (
-                            <span className="text-xs text-gray-600">{item.tahunPerolehan || '-'}</span>
-                          )}
-                        </td>
-                        <td className="px-3 py-2">
-                          {editingKeterangan ? (
-                            <input type="text" value={editedKeterangan[item.rowIndex] ?? item.keterangan} onChange={(e) => setEditedKeterangan({ ...editedKeterangan, [item.rowIndex]: e.target.value })} className="w-full px-2 py-1 text-xs border border-gray-300 rounded focus:ring-2 focus:ring-cyan-500 focus:outline-none text-gray-900" />
-                          ) : (
-                            <span className="text-xs text-gray-600">{item.keterangan || '-'}</span>
-                          )}
-                        </td>
-                        <td className="px-3 py-2">
-                          <PhotoUpload
-                            locationId={locationId}
-                            category="apd-std"
-                            itemId={`row-${item.rowIndex}`}
-                            rowIndex={item.rowIndex}
-                            currentPhotoUrl={item.fotoKondisi}
-                            compact={true}
-                            onUploadSuccess={(data) => {
-                              setApdData(prev => prev.map(d => 
-                                d.rowIndex === item.rowIndex 
-                                  ? { ...d, fotoKondisi: data.thumbnailUrl } 
-                                  : d
-                              ));
-                            }}
-                            onUploadError={(error) => alert(error)}
-                          />
-                        </td>
-                      </tr>
-                    )
-                  ))}
-                </tbody>
-              </table>
+        {/* Tables Grid */}
+        <div className={`grid gap-6 ${showExampleTable ? 'lg:grid-cols-2' : 'lg:grid-cols-1'}`}>
+          {/* Example Table (Left - Gray) */}
+          {showExampleTable && (
+            <div className="bg-white rounded-xl shadow-xl overflow-hidden">
+              <div className="bg-gradient-to-r from-gray-500 to-gray-600 px-4 py-3">
+                <h3 className="text-white font-bold text-sm flex items-center gap-2">
+                  📋 CONTOH ISIAN (Referensi)
+                </h3>
+                <p className="text-gray-200 text-xs mt-1">Tabel contoh untuk membantu pengisian</p>
+              </div>
+              <div className="overflow-x-auto max-h-[600px] overflow-y-auto">
+                <table className="w-full text-sm">
+                  <thead className="bg-gray-100 sticky top-0">
+                    <tr>
+                      <th className="px-3 py-2 text-left text-xs font-semibold text-gray-600 uppercase">Item/Peralatan</th>
+                      <th className="px-3 py-2 text-left text-xs font-semibold text-gray-600 uppercase">APD</th>
+                      <th className="px-3 py-2 text-left text-xs font-semibold text-gray-600 uppercase">Satuan</th>
+                      <th className="px-3 py-2 text-left text-xs font-semibold text-gray-600 uppercase">GI</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-200">
+                    {EXAMPLE_DATA.map((item, index) => {
+                      const isCategory = item.itemPeralatan && !item.apd;
+                      return isCategory ? (
+                        <tr key={index} className="bg-gray-200">
+                          <td colSpan={4} className="px-3 py-2 text-xs font-bold text-gray-800">
+                            {item.itemPeralatan}
+                          </td>
+                        </tr>
+                      ) : (
+                        <tr key={index} className="hover:bg-gray-50">
+                          <td className="px-3 py-2 text-xs text-gray-500">{item.itemPeralatan}</td>
+                          <td className="px-3 py-2 text-xs text-gray-700">{item.apd}</td>
+                          <td className="px-3 py-2 text-xs text-gray-500">{item.satuan}</td>
+                          <td className="px-3 py-2 text-xs text-gray-600 font-semibold">{item.gi}</td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
             </div>
           )}
 
-          {apdData.length === 0 && !loading && (
-            <div className="p-12 text-center text-gray-500">
-              Tidak ada data APD STD
+          {/* Input Table (Right - Green header) */}
+          <div className="bg-white rounded-xl shadow-xl overflow-hidden">
+            <div className="bg-gradient-to-r from-green-500 to-emerald-600 px-4 py-3">
+              <h3 className="text-white font-bold text-sm flex items-center gap-2">
+                ✏️ DATA APD GI {location.name.toUpperCase()}
+              </h3>
+              <p className="text-green-100 text-xs mt-1">Tabel isian update kondisi APD</p>
             </div>
-          )}
+            {loading ? (
+              <div className="p-12 text-center">
+                <div className="text-cyan-600 text-xl mb-2">Memuat data...</div>
+                <div className="text-gray-500">Mohon tunggu sebentar</div>
+              </div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead className="bg-green-50 sticky top-0">
+                    <tr>
+                      <th className="px-3 py-2 text-left text-xs font-semibold text-green-800 uppercase sticky left-0 bg-green-50">Item/Peralatan</th>
+                      <th className="px-3 py-2 text-left text-xs font-semibold text-green-800 uppercase">APD</th>
+                      <th className="px-3 py-2 text-left text-xs font-semibold text-green-800 uppercase">Satuan</th>
+                      <th className="px-3 py-2 text-left text-xs font-semibold text-green-800 uppercase">
+                        <div className="flex items-center justify-between gap-2">
+                          <span>BAIK (Jumlah)</span>
+                          {editingBaik ? (
+                            <div className="flex gap-1">
+                              <button onClick={() => baikHandlers.save(editedBaik)} disabled={updating} className="px-2 py-1 bg-green-600 text-white text-xs rounded hover:bg-green-700 disabled:opacity-50">✓</button>
+                              <button onClick={baikHandlers.cancel} disabled={updating} className="px-2 py-1 bg-gray-400 text-white text-xs rounded hover:bg-gray-500 disabled:opacity-50">✕</button>
+                            </div>
+                          ) : (
+                            <button onClick={baikHandlers.edit} className="px-2 py-1 bg-green-600 text-white text-xs rounded hover:bg-green-700">Edit</button>
+                          )}
+                        </div>
+                      </th>
+                      <th className="px-3 py-2 text-left text-xs font-semibold text-green-800 uppercase">
+                        <div className="flex items-center justify-between gap-2">
+                          <span>RUSAK/KADALUARSA</span>
+                          {editingRusak ? (
+                            <div className="flex gap-1">
+                              <button onClick={() => rusakHandlers.save(editedRusak)} disabled={updating} className="px-2 py-1 bg-green-600 text-white text-xs rounded hover:bg-green-700 disabled:opacity-50">✓</button>
+                              <button onClick={rusakHandlers.cancel} disabled={updating} className="px-2 py-1 bg-gray-400 text-white text-xs rounded hover:bg-gray-500 disabled:opacity-50">✕</button>
+                            </div>
+                          ) : (
+                            <button onClick={rusakHandlers.edit} className="px-2 py-1 bg-green-600 text-white text-xs rounded hover:bg-green-700">Edit</button>
+                          )}
+                        </div>
+                      </th>
+                      <th className="px-3 py-2 text-left text-xs font-semibold text-green-800 uppercase">
+                        <div className="flex items-center justify-between gap-2">
+                          <span>MERK/TYPE</span>
+                          {editingMerk ? (
+                            <div className="flex gap-1">
+                              <button onClick={() => merkHandlers.save(editedMerk)} disabled={updating} className="px-2 py-1 bg-green-600 text-white text-xs rounded hover:bg-green-700 disabled:opacity-50">✓</button>
+                              <button onClick={merkHandlers.cancel} disabled={updating} className="px-2 py-1 bg-gray-400 text-white text-xs rounded hover:bg-gray-500 disabled:opacity-50">✕</button>
+                            </div>
+                          ) : (
+                            <button onClick={merkHandlers.edit} className="px-2 py-1 bg-green-600 text-white text-xs rounded hover:bg-green-700">Edit</button>
+                          )}
+                        </div>
+                      </th>
+                      <th className="px-3 py-2 text-left text-xs font-semibold text-green-800 uppercase">
+                        <div className="flex items-center justify-between gap-2">
+                          <span>TAHUN PEROLEHAN</span>
+                          {editingTahun ? (
+                            <div className="flex gap-1">
+                              <button onClick={() => tahunHandlers.save(editedTahun)} disabled={updating} className="px-2 py-1 bg-green-600 text-white text-xs rounded hover:bg-green-700 disabled:opacity-50">✓</button>
+                              <button onClick={tahunHandlers.cancel} disabled={updating} className="px-2 py-1 bg-gray-400 text-white text-xs rounded hover:bg-gray-500 disabled:opacity-50">✕</button>
+                            </div>
+                          ) : (
+                            <button onClick={tahunHandlers.edit} className="px-2 py-1 bg-green-600 text-white text-xs rounded hover:bg-green-700">Edit</button>
+                          )}
+                        </div>
+                      </th>
+                      <th className="px-3 py-2 text-left text-xs font-semibold text-green-800 uppercase">
+                        <div className="flex items-center justify-between gap-2">
+                          <span>KET</span>
+                          {editingKeterangan ? (
+                            <div className="flex gap-1">
+                              <button onClick={() => keteranganHandlers.save(editedKeterangan)} disabled={updating} className="px-2 py-1 bg-green-600 text-white text-xs rounded hover:bg-green-700 disabled:opacity-50">✓</button>
+                              <button onClick={keteranganHandlers.cancel} disabled={updating} className="px-2 py-1 bg-gray-400 text-white text-xs rounded hover:bg-gray-500 disabled:opacity-50">✕</button>
+                            </div>
+                          ) : (
+                            <button onClick={keteranganHandlers.edit} className="px-2 py-1 bg-green-600 text-white text-xs rounded hover:bg-green-700">Edit</button>
+                          )}
+                        </div>
+                      </th>
+                      <th className="px-3 py-2 text-left text-xs font-semibold text-green-800 uppercase">
+                        📷 Foto
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-200">
+                    {apdData.map((item, index) => (
+                      item.isCategory ? (
+                        <tr key={index} className="bg-green-100">
+                          <td colSpan={9} className="px-3 py-2 text-xs font-bold text-green-900">
+                            {item.itemPeralatan}
+                          </td>
+                        </tr>
+                      ) : (
+                        <tr key={index} className="hover:bg-gray-50">
+                          <td className="px-3 py-2 text-xs text-gray-600 sticky left-0 bg-white">{item.itemPeralatan}</td>
+                          <td className="px-3 py-2 text-xs text-gray-900">{item.apd}</td>
+                          <td className="px-3 py-2 text-xs text-gray-600">{item.satuan}</td>
+                          <td className="px-3 py-2">
+                            {editingBaik ? (
+                              <input type="text" value={editedBaik[item.rowIndex] ?? item.baik} onChange={(e) => setEditedBaik({ ...editedBaik, [item.rowIndex]: e.target.value })} className="w-20 px-2 py-1 text-xs border border-gray-300 rounded focus:ring-2 focus:ring-green-500 focus:outline-none text-gray-900" />
+                            ) : (
+                              <span className="text-xs font-semibold text-green-700">{item.baik || '-'}</span>
+                            )}
+                          </td>
+                          <td className="px-3 py-2">
+                            {editingRusak ? (
+                              <input type="text" value={editedRusak[item.rowIndex] ?? item.rusak} onChange={(e) => setEditedRusak({ ...editedRusak, [item.rowIndex]: e.target.value })} className="w-20 px-2 py-1 text-xs border border-gray-300 rounded focus:ring-2 focus:ring-green-500 focus:outline-none text-gray-900" />
+                            ) : (
+                              <span className="text-xs font-semibold text-red-700">{item.rusak || '-'}</span>
+                            )}
+                          </td>
+                          <td className="px-3 py-2">
+                            {editingMerk ? (
+                              <input type="text" value={editedMerk[item.rowIndex] ?? item.merk} onChange={(e) => setEditedMerk({ ...editedMerk, [item.rowIndex]: e.target.value })} className="w-full px-2 py-1 text-xs border border-gray-300 rounded focus:ring-2 focus:ring-green-500 focus:outline-none text-gray-900" />
+                            ) : (
+                              <span className="text-xs text-gray-900">{item.merk || '-'}</span>
+                            )}
+                          </td>
+                          <td className="px-3 py-2">
+                            {editingTahun ? (
+                              <input type="text" value={editedTahun[item.rowIndex] ?? item.tahunPerolehan} onChange={(e) => setEditedTahun({ ...editedTahun, [item.rowIndex]: e.target.value })} className="w-20 px-2 py-1 text-xs border border-gray-300 rounded focus:ring-2 focus:ring-green-500 focus:outline-none text-gray-900" />
+                            ) : (
+                              <span className="text-xs text-gray-600">{item.tahunPerolehan || '-'}</span>
+                            )}
+                          </td>
+                          <td className="px-3 py-2">
+                            {editingKeterangan ? (
+                              <input type="text" value={editedKeterangan[item.rowIndex] ?? item.keterangan} onChange={(e) => setEditedKeterangan({ ...editedKeterangan, [item.rowIndex]: e.target.value })} className="w-full px-2 py-1 text-xs border border-gray-300 rounded focus:ring-2 focus:ring-green-500 focus:outline-none text-gray-900" />
+                            ) : (
+                              <span className="text-xs text-gray-600">{item.keterangan || '-'}</span>
+                            )}
+                          </td>
+                          <td className="px-3 py-2">
+                            <PhotoUpload
+                              locationId={locationId}
+                              category="apd-std"
+                              itemId={`row-${item.rowIndex}`}
+                              rowIndex={item.rowIndex}
+                              currentPhotoUrl={item.fotoKondisi}
+                              compact={true}
+                              onUploadSuccess={(data) => {
+                                setApdData(prev => prev.map(d => 
+                                  d.rowIndex === item.rowIndex 
+                                    ? { ...d, fotoKondisi: data.thumbnailUrl } 
+                                    : d
+                                ));
+                              }}
+                              onUploadError={(error) => alert(error)}
+                            />
+                          </td>
+                        </tr>
+                      )
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+
+            {apdData.length === 0 && !loading && (
+              <div className="p-12 text-center text-gray-500">
+                Tidak ada data APD STD
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>
