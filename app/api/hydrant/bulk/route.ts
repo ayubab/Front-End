@@ -1,27 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { google } from 'googleapis';
 
-const SCOPES = ['https://www.googleapis.com/auth/spreadsheets'];
-
-// Location-specific sheet IDs
-const LOCATION_SHEET_MAP: { [key: string]: string } = {
-  'k3-apd': process.env.SHEET_ID_K3_APD || '',
-  'k3-apar': process.env.SHEET_ID_K3_APAR || '',
-  'k3-p3k': process.env.SHEET_ID_K3_P3K || '',
-};
-
-const getSheetIdForLocation = (locationId: string): string => {
-  return LOCATION_SHEET_MAP[locationId] || process.env.NEXT_PUBLIC_SHEET_ID || '';
-};
-
-async function getAuthClient() {
-  const credentials = JSON.parse(process.env.GOOGLE_CREDENTIALS || '{}');
-  const auth = new google.auth.GoogleAuth({
-    credentials,
-    scopes: SCOPES,
-  });
-  return auth.getClient();
-}
+import { getSheetIdForLocation } from '@/lib/sheets';
 
 export async function PUT(request: NextRequest) {
   try {
@@ -49,8 +29,11 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    const authClient = await getAuthClient();
-    const sheets = google.sheets({ version: 'v4', auth: authClient as any });
+    const auth = new google.auth.GoogleAuth({
+      credentials: JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT_KEY || '{}'),
+      scopes: ['https://www.googleapis.com/auth/spreadsheets'],
+    });
+    const sheets = google.sheets({ version: 'v4', auth });
 
     // Prepare batch update data
     const batchData: any[] = [];
@@ -63,7 +46,7 @@ export async function PUT(request: NextRequest) {
       // Update Box Kondisi (column O)
       if (boxKondisi !== undefined) {
         batchData.push({
-          range: `Hydrant!O${rowIndex}`,
+          range: `HYDRANT!O${rowIndex}`,
           values: [[boxKondisi]],
         });
       }
@@ -71,7 +54,7 @@ export async function PUT(request: NextRequest) {
       // Update Pilar Kondisi (column T)
       if (pilarKondisi !== undefined) {
         batchData.push({
-          range: `Hydrant!T${rowIndex}`,
+          range: `HYDRANT!T${rowIndex}`,
           values: [[pilarKondisi]],
         });
       }
@@ -79,7 +62,7 @@ export async function PUT(request: NextRequest) {
       // Update Nozzle Kondisi (column Y)
       if (nozzleKondisi !== undefined) {
         batchData.push({
-          range: `Hydrant!Y${rowIndex}`,
+          range: `HYDRANT!Y${rowIndex}`,
           values: [[nozzleKondisi]],
         });
       }

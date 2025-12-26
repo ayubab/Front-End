@@ -1,27 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { google } from 'googleapis';
 
-const SCOPES = ['https://www.googleapis.com/auth/spreadsheets'];
-
-// Location-specific sheet IDs
-const LOCATION_SHEET_MAP: { [key: string]: string } = {
-  'k3-apd': process.env.SHEET_ID_K3_APD || '',
-  'k3-apar': process.env.SHEET_ID_K3_APAR || '',
-  'k3-p3k': process.env.SHEET_ID_K3_P3K || '',
-};
-
-const getSheetIdForLocation = (locationId: string): string => {
-  return LOCATION_SHEET_MAP[locationId] || process.env.NEXT_PUBLIC_SHEET_ID || '';
-};
-
-async function getAuthClient() {
-  const credentials = JSON.parse(process.env.GOOGLE_CREDENTIALS || '{}');
-  const auth = new google.auth.GoogleAuth({
-    credentials,
-    scopes: SCOPES,
-  });
-  return auth.getClient();
-}
+import { getSheetIdForLocation } from '@/lib/sheets';
 
 export async function GET(request: NextRequest) {
   try {
@@ -43,8 +23,11 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const authClient = await getAuthClient();
-    const sheets = google.sheets({ version: 'v4', auth: authClient as any });
+    const auth = new google.auth.GoogleAuth({
+      credentials: JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT_KEY || '{}'),
+      scopes: ['https://www.googleapis.com/auth/spreadsheets'],
+    });
+    const sheets = google.sheets({ version: 'v4', auth });
 
     // Fetch date, summary, and logs based on new layout
     const [dateResponse, summaryResponse, logsResponse] = await Promise.all([

@@ -278,11 +278,11 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Update Pilar Hydrant kondisi (column S)
+    // Update Pilar Hydrant kondisi (column T)
     if (updates.pilarHydrants) {
       for (const update of updates.pilarHydrants) {
         batchUpdates.push({
-          range: `${sheetName}!S${update.rowIndex}`,
+          range: `${sheetName}!T${update.rowIndex}`,
           values: [[update.kondisi]]
         });
       }
