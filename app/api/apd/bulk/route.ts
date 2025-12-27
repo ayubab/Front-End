@@ -1,28 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { google } from 'googleapis';
 
-const SCOPES = ['https://www.googleapis.com/auth/spreadsheets'];
-
 import { getSheetIdForLocation } from '@/lib/sheets';
-
-async function getAuthClient() {
-  const options: any = {
-    scopes: SCOPES,
-  };
-  
-  const credentialsJson = process.env.GOOGLE_SERVICE_ACCOUNT_KEY || process.env.GOOGLE_CREDENTIALS;
-
-  if (credentialsJson) {
-    try {
-      options.credentials = JSON.parse(credentialsJson);
-    } catch (err) {
-      console.error('Error parsing credentials:', err);
-    }
-  }
-
-  const auth = new google.auth.GoogleAuth(options);
-  return auth.getClient();
-}
 
 export async function PUT(request: NextRequest) {
   try {
@@ -50,8 +29,11 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    const authClient = await getAuthClient();
-    const sheets = google.sheets({ version: 'v4', auth: authClient as any });
+    const auth = new google.auth.GoogleAuth({
+      credentials: JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT_KEY || '{}'),
+      scopes: ['https://www.googleapis.com/auth/spreadsheets'],
+    });
+    const sheets = google.sheets({ version: 'v4', auth });
 
     // Prepare batch update data
     const batchData: any[] = [];
