@@ -86,7 +86,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       kantorGarduInduk: formData.get('kantorGarduInduk'),
       lokasi: formData.get('lokasi'),
       tanggalInspeksi: formData.get('tanggalInspeksi'),
-      kondi: formData.get('kondi'),
+      kondisi: formData.get('kondisi'),
       keterangan: formData.get('keterangan'),
       ambilFoto: formData.get('ambilFoto'),
       // Category-specific fields will be added below
@@ -286,7 +286,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
           (data as any).kelasKebakaran,   // K: KELAS KEBAKARAN
           `'${(data as any).tanggalPengisian}`, // L: TANGGAL PENGISIAN (apostrophe prefix keeps as text)
           `'${(data as any).kadaluarsa}`,       // M: KADALUARSA (apostrophe prefix keeps as text)
-          (data as any).kondi,            // N: KONDISI
+          (data as any).kondisi,            // N: KONDISI
           (data as any).keterangan,       // O: KETERANGAN
           photoUrl                    // P: Foto
         ];
@@ -333,7 +333,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
           (data as any).tekanan,
           (data as any).lokasi,
           (data as any).tanggalInspeksi,
-          (data as any).kondi,
+          (data as any).kondisi,
           (data as any).keterangan,
           photoUrl
         ];
@@ -351,7 +351,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
           (data as any).jumlah,
           (data as any).lokasi,
           (data as any).tanggalInspeksi,
-          (data as any).kondi,
+          (data as any).kondisi,
           (data as any).keterangan,
           photoUrl
         ];
@@ -369,7 +369,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
           (data as any).tegangan,
           (data as any).lokasi,
           (data as any).tanggalInspeksi,
-          (data as any).kondi,
+          (data as any).kondisi,
           (data as any).keterangan,
           photoUrl
         ];
@@ -387,7 +387,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
           (data as any).kapasitas,
           (data as any).lokasi,
           (data as any).tanggalInspeksi,
-          (data as any).kondi,
+          (data as any).kondisi,
           (data as any).keterangan,
           photoUrl
         ];
@@ -405,7 +405,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
           (data as any).statusRekaman,
           (data as any).lokasi,
           (data as any).tanggalInspeksi,
-          (data as any).kondi,
+          (data as any).kondisi,
           (data as any).keterangan,
           photoUrl
         ];
@@ -423,7 +423,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
           (data as any).statusPenyimpanan,
           (data as any).lokasi,
           (data as any).tanggalInspeksi,
-          (data as any).kondi,
+          (data as any).kondisi,
           (data as any).keterangan,
           photoUrl
         ];
@@ -440,7 +440,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
           (data as any).statusKelengkapan,
           (data as any).lokasi,
           (data as any).tanggalInspeksi,
-          (data as any).kondi,
+          (data as any).kondisi,
           (data as any).keterangan,
           photoUrl
         ];

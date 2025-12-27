@@ -258,13 +258,13 @@ export default function DaftarItemPage() {
                 />
               </div>
 
-              {/* KONDI */}
+              {/* KONDISI */}
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  KONDI <span className="text-red-500">*</span>
+                  KONDISI <span className="text-red-500">*</span>
                 </label>
                 <select
-                  name="kondi"
+                  name="kondisi"
                   required
                   className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-500 text-gray-900"
                 >
