@@ -127,7 +127,7 @@ export const categories: Category[] = [
   { id: 'fire-alarm', name: 'FIRE ALARM', icon: '🚨' },
   { id: 'hydrant', name: 'HYDRANT', icon: '🚒' },
   { id: 'apd', name: 'APD', icon: '👷' },
-  { id: 'apd-std-har', name: 'APD STD HAR', icon: '🛡️' },
+  { id: 'apd-std', name: 'APD STANDAR', icon: '🛡️' },
   { id: 'alat-kerja', name: 'ALAT KERJA', icon: '🔧' },
   { id: 'cctv', name: 'CCTV', icon: '📹' },
   { id: 'limbah-b3', name: 'LIMBAH B3', icon: '⚠️' },
@@ -164,13 +164,7 @@ export const apdItems: APDItem[] = [
   { id: 'safety-shoes', categoryId: 'apd', name: 'SAFETY SHOES' },
   { id: 'rompi-safety', categoryId: 'apd', name: 'ROMPI SAFETY' },
 
-  // 6. APD STD HAR
-  { id: 'helm-har', categoryId: 'apd-std-har', name: 'HELM HAR' },
-  { id: 'sarung-tangan-insulasi', categoryId: 'apd-std-har', name: 'SARUNG TANGAN INSULASI' },
-  { id: 'sepatu-dielektrik', categoryId: 'apd-std-har', name: 'SEPATU DIELEKTRIK' },
-  { id: 'body-harness', categoryId: 'apd-std-har', name: 'BODY HARNESS' },
-
-  // 7. A1-AT KERJA
+  // 6. ALAT KERJA
   { id: 'tangga-alumunium', categoryId: 'alat-kerja', name: 'TANGGA ALUMUNIUM' },
   { id: 'kunci-inggris', categoryId: 'alat-kerja', name: 'KUNCI INGGRIS' },
   { id: 'obeng-set', categoryId: 'alat-kerja', name: 'OBENG SET' },

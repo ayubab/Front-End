@@ -155,17 +155,6 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
         });
         break;
 
-      case 'apd-std-har':
-        Object.assign(data, {
-          jenisPeralatan: formData.get('jenisPeralatan'),
-          nomorSeri: formData.get('nomorSeri'),
-          merk: formData.get('merk'),
-          tanggalKalibrasi: formData.get('tanggalKalibrasi'),
-          tegangan: formData.get('tegangan'),
-          jenis: 'APD STD HAR', // Category name
-        });
-        break;
-
       case 'alat-kerja':
         Object.assign(data, {
           jenisAlat: formData.get('jenisAlat'),
@@ -357,24 +346,6 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
         ];
         break;
 
-      case 'apd-std-har':
-        rowData = [
-          id,
-          (data as any).kantorGarduInduk,
-          (data as any).jenisPeralatan,
-          (data as any).nomorSeri,
-          (data as any).merk,
-          (data as any).jenis,            // JENIS (category name)
-          (data as any).tanggalKalibrasi,
-          (data as any).tegangan,
-          (data as any).lokasi,
-          (data as any).tanggalInspeksi,
-          (data as any).kondisi,
-          (data as any).keterangan,
-          photoUrl
-        ];
-        break;
-
       case 'alat-kerja':
         rowData = [
           id,
@@ -496,7 +467,6 @@ function getSheetName(category: string): string {
     'fire-alarm': 'FIRE ALARM',
     'hydrant': 'HYDRANT',
     'apd': 'APD',
-    'apd-std-har': 'STD HAR',
     'alat-kerja': 'ALAT KERJA',
     'cctv': 'CCTV',
     'limbah-b3': 'LIMBAH B3',
@@ -571,10 +541,6 @@ function getSheetHeaders(sheetName: string): string[] {
     ],
     'APD': [
       'ID', 'KANTOR/GARDU INDUK', 'JENIS APD', 'UKURAN', 'MERK', 'JENIS', 'TANGGAL KADALUARSA', 'JUMLAH', 
-      'LOKASI', 'TANGGAL INSPEKSI', 'KONDISI', 'KETERANGAN', 'FOTO'
-    ],
-    'STD HAR': [
-      'ID', 'KANTOR/GARDU INDUK', 'JENIS PERALATAN', 'NOMOR SERI', 'MERK', 'JENIS', 'TANGGAL KALIBRASI', 'TEGANGAN', 
       'LOKASI', 'TANGGAL INSPEKSI', 'KONDISI', 'KETERANGAN', 'FOTO'
     ],
     'ALAT KERJA': [
