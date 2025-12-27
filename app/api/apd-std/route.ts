@@ -30,21 +30,35 @@ export async function GET(request: NextRequest) {
     const sheets = google.sheets({ version: 'v4', auth });
 
     // Fetch headers and last update date (K5)
-    const [headersResponse, lastUpdateResponse, dataResponse] = await Promise.all([
-      sheets.spreadsheets.values.get({
-        spreadsheetId: SHEET_ID,
-        range: 'APD STD!A5:J5',
-      }),
-      sheets.spreadsheets.values.get({
-        spreadsheetId: SHEET_ID,
-        range: 'APD STD!K5',
-      }),
-      // Fetch all data starting from row 6 (A6:J120)
-      sheets.spreadsheets.values.get({
-        spreadsheetId: SHEET_ID,
-        range: 'APD STD!A6:J120',
-      }),
-    ]);
+    let headersResponse, lastUpdateResponse, dataResponse;
+    try {
+      [headersResponse, lastUpdateResponse, dataResponse] = await Promise.all([
+        sheets.spreadsheets.values.get({
+          spreadsheetId: SHEET_ID,
+          range: 'APD STD!A5:J5',
+        }),
+        sheets.spreadsheets.values.get({
+          spreadsheetId: SHEET_ID,
+          range: 'APD STD!K5',
+        }),
+        // Fetch all data starting from row 6 (A6:J120)
+        sheets.spreadsheets.values.get({
+          spreadsheetId: SHEET_ID,
+          range: 'APD STD!A6:J120',
+        }),
+      ]);
+    } catch (sheetError: any) {
+      console.error('Error fetching sheet data:', sheetError?.message);
+      // Check if it's a "sheet not found" type error
+      if (sheetError?.message?.includes('Unable to parse range') || 
+          sheetError?.code === 400) {
+        return NextResponse.json({
+          success: false,
+          error: `Sheet "APD STD" tidak ditemukan di spreadsheet untuk lokasi ini. Pastikan sheet dengan nama "APD STD" sudah ada.`,
+        }, { status: 404 });
+      }
+      throw sheetError;
+    }
 
     const headers = headersResponse.data.values?.[0] || [];
     const lastUpdateDate = lastUpdateResponse.data.values?.[0]?.[0] || '';

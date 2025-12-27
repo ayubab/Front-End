@@ -35,10 +35,11 @@ interface FieldMetadata {
 const EXAMPLE_DATA: ExampleItem[] = [
   // ALAT PELINDUNG KEPALA
   { itemPeralatan: 'ALAT PELINDUNG KEPALA', apd: '', satuan: '', gi: '' },
-  { itemPeralatan: '', apd: 'Helm Kerja Lapangan', satuan: 'Buah', gi: '10' },
-  { itemPeralatan: '', apd: 'Helm Kerja Kantor (Topi)', satuan: 'Buah', gi: '5' },
-  { itemPeralatan: '', apd: 'Helm Las', satuan: 'Buah', gi: '2' },
-  { itemPeralatan: '', apd: 'Topi Pelindung', satuan: 'Buah', gi: '5' },
+  { itemPeralatan: '', apd: 'Helm Biru (HAR, Operator)', satuan: 'Buah', gi: '-' },
+  { itemPeralatan: '', apd: 'Helm Merah (P.K, P.M, P.P)', satuan: 'Buah', gi: '-' },
+  { itemPeralatan: '', apd: 'Helm Kuning (Mitra, Magang)', satuan: 'Buah', gi: '-' },
+  { itemPeralatan: '', apd: 'Helm Putih (Tamu, Manajemen)', satuan: 'Buah', gi: '-' },
+  { itemPeralatan: '', apd: 'Helm Hijau (K3)', satuan: 'Buah', gi: '-' },
   // ALAT PELINDUNG MATA DAN MUKA
   { itemPeralatan: 'ALAT PELINDUNG MATA DAN MUKA', apd: '', satuan: '', gi: '' },
   { itemPeralatan: '', apd: 'Kacamata Las', satuan: 'Buah', gi: '2' },
