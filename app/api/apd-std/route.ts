@@ -29,27 +29,15 @@ export async function GET(request: NextRequest) {
     });
     const sheets = google.sheets({ version: 'v4', auth });
 
-    // Fetch headers and last update date (K5)
-    let headersResponse, lastUpdateResponse, dataResponse;
+    // Fetch A5:Z120 to cover all new "HAR" columns
+    let dataResponse;
     try {
-      [headersResponse, lastUpdateResponse, dataResponse] = await Promise.all([
-        sheets.spreadsheets.values.get({
-          spreadsheetId: SHEET_ID,
-          range: 'APD STD!A5:J5',
-        }),
-        sheets.spreadsheets.values.get({
-          spreadsheetId: SHEET_ID,
-          range: 'APD STD!K5',
-        }),
-        // Fetch all data starting from row 6 (A6:J120)
-        sheets.spreadsheets.values.get({
-          spreadsheetId: SHEET_ID,
-          range: 'APD STD!A6:J120',
-        }),
-      ]);
+      dataResponse = await sheets.spreadsheets.values.get({
+        spreadsheetId: SHEET_ID,
+        range: 'APD STD!A5:Z120',
+      });
     } catch (sheetError: any) {
       console.error('Error fetching sheet data:', sheetError?.message);
-      // Check if it's a "sheet not found" type error
       if (sheetError?.message?.includes('Unable to parse range') || 
           sheetError?.code === 400) {
         return NextResponse.json({
@@ -60,50 +48,86 @@ export async function GET(request: NextRequest) {
       throw sheetError;
     }
 
-    const headers = headersResponse.data.values?.[0] || [];
-    const lastUpdateDate = lastUpdateResponse.data.values?.[0]?.[0] || '';
+    const values = dataResponse.data.values || [];
+    
+    // In A5:Z120 range:
+    // Index 0 = Row 5 (Headers)
+    // Index 1 = Row 6
+    // Index 2 = Row 7 (Start of Data as per prompt "A7:A11...")
 
-    const rows = dataResponse.data.values || [];
     const apdData: any[] = [];
+    
+    // Start processing from Index 2 (Row 7)
+    for (let i = 2; i < values.length; i++) {
+        const row = values[i];
+        // Only process if we have a row of data
+        if (!row) continue;
 
-    const categoryStartRows = new Set([6, 11, 15, 20, 22, 27, 32, 36, 42, 46, 50, 63]);
-    rows.forEach((row, index) => {
-      const rowIndex = index + 6; // Actual row number in sheet
-      const itemPeralatan = row[0]?.toString() || '';
-      const apd = row[1]?.toString() || '';
-      const satuan = row[2]?.toString() || '';
-      const baik = row[5]?.toString() || '';
-      const rusak = row[6]?.toString() || '';
-      const merk = row[7]?.toString() || '';
-      const tahunPerolehan = row[8]?.toString() || '';
-      const keterangan = row[9]?.toString() || '';
+        const rowIndex = i + 5; // Convert 0-based index relative to A5 to sheet physical row
 
-      // Category rows are predefined start rows or rows without APD detail
-      const isCategory = categoryStartRows.has(rowIndex) || (itemPeralatan && !apd && !baik && !rusak && !merk && !tahunPerolehan && !keterangan);
+        // Columns mapping (0-based index in 'values' array):
+        // A=0, B=1, C=2, D=3, E=4, F=5, G=6, H=7, I=8 (Empty)
+        // J=9, K=10, L=11, M=12, N=13 (HAR GI)
+        // O=14 (Empty)
+        // P=15, Q=16, R=17, S=18, T=19 (HAR JAR)
+        // U=20 (Empty)
+        // V=21, W=22, X=23, Y=24, Z=25 (HAR PRO)
 
-      // Skip completely empty rows
-      if (!itemPeralatan && !apd && !baik && !rusak && !merk && !tahunPerolehan && !keterangan) {
-        return;
-      }
+        const itemPeralatan = row[0]?.toString() || '';
+        const apd = row[1]?.toString() || '';
+        const satuan = row[2]?.toString() || '';
+        const locationInfo = row[3]?.toString() || ''; // GIS/GI/GITET
+        
+        // Check for category: If Item Name exists but APD Name is empty
+        const isCategory = itemPeralatan && !apd;
 
-      apdData.push({
-        rowIndex,
-        itemPeralatan,
-        apd,
-        satuan,
-        baik,
-        rusak,
-        merk,
-        tahunPerolehan,
-        keterangan,
-        isCategory,
-      });
-    });
+        // Skip completely empty rows
+        if (!itemPeralatan && !apd && !satuan) continue;
+
+        const dataGi = {
+            baik: row[9]?.toString() || '',
+            rusak: row[10]?.toString() || '',
+            merk: row[11]?.toString() || '',
+            tahun: row[12]?.toString() || '',
+            keterangan: row[13]?.toString() || ''
+        };
+
+        const dataJar = {
+            baik: row[15]?.toString() || '',
+            rusak: row[16]?.toString() || '',
+            merk: row[17]?.toString() || '',
+            tahun: row[18]?.toString() || '',
+            keterangan: row[19]?.toString() || ''
+        };
+
+        const dataPro = {
+            baik: row[21]?.toString() || '',
+            rusak: row[22]?.toString() || '',
+            merk: row[23]?.toString() || '',
+            tahun: row[24]?.toString() || '',
+            keterangan: row[25]?.toString() || ''
+        };
+
+        apdData.push({
+            rowIndex,
+            itemPeralatan,
+            apd,
+            satuan,
+            locationInfo,
+            isCategory,
+            gi: dataGi,
+            jar: dataJar,
+            pro: dataPro
+        });
+    }
+
+    // Attempt to read Last Update Date from K5.
+    // In range A5:Z120, Row 5 is index 0. Column K is index 10.
+    const lastUpdateDate = values[0]?.[10] || '';
 
     return NextResponse.json({
       success: true,
       data: apdData,
-      fieldMetadata: {},
       lastUpdateDate,
     });
   } catch (error) {

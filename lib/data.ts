@@ -132,6 +132,7 @@ export const categories: Category[] = [
   { id: 'cctv', name: 'CCTV', icon: '📹' },
   { id: 'limbah-b3', name: 'LIMBAH B3', icon: '⚠️' },
   {id: 'denah', name: 'Denah', icon: '🗺️' },
+  { id: 'std-har', name: 'STD HAR', icon: '📋' },
 ];
 
 // APD Items per kategori
