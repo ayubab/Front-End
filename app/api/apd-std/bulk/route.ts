@@ -3,9 +3,11 @@ import { google } from 'googleapis';
 
 import { getSheetIdForLocation } from '@/lib/sheets';
 
+const KANTOR_LOCATION_ID = 'ultg-yogyakarta';
+
 export async function PUT(request: NextRequest) {
   try {
-    const { locationId, updates, tanggalUpdate, type } = await request.json(); // type: 'gi' | 'jar' | 'pro'
+    const { locationId, updates, tanggalUpdate, type } = await request.json();
 
     if (!locationId) {
       return NextResponse.json(
@@ -20,10 +22,6 @@ export async function PUT(request: NextRequest) {
         { status: 400 }
       );
     }
-    
-    // Default to 'gi' if not specified for backward compatibility, or error?
-    // Let's assume 'gi' if missing, but preferably should be sent.
-    const updateType = type || 'gi';
 
     const SHEET_ID = getSheetIdForLocation(locationId);
     if (!SHEET_ID) {
@@ -39,64 +37,75 @@ export async function PUT(request: NextRequest) {
     });
     const sheets = google.sheets({ version: 'v4', auth });
 
-    // Prepare batch update data
+    const isKantor = locationId === KANTOR_LOCATION_ID;
     const batchData: any[] = [];
 
-    // Column mapping based on type
-    const columnMap: Record<string, { baik: string, rusak: string, merk: string, tahun: string, keterangan: string }> = {
-      gi: { baik: 'J', rusak: 'K', merk: 'L', tahun: 'M', keterangan: 'N' },
-      jar: { baik: 'P', rusak: 'Q', merk: 'R', tahun: 'S', keterangan: 'T' },
-      pro: { baik: 'V', rusak: 'W', merk: 'X', tahun: 'Y', keterangan: 'Z' }
-    };
+    if (isKantor) {
+      // KANTOR: Use APD STD HAR sheet with HAR GI/JAR/PRO columns
+      const sheetName = 'APD STD HAR';
+      const updateType = type || 'gi';
 
-    const columns = columnMap[updateType];
-    if (!columns) {
+      // Column mapping for KANTOR
+      const columnMap: Record<string, { baik: string, rusak: string, merk: string, tahun: string, keterangan: string }> = {
+        gi: { baik: 'J', rusak: 'K', merk: 'L', tahun: 'M', keterangan: 'N' },
+        jar: { baik: 'P', rusak: 'Q', merk: 'R', tahun: 'S', keterangan: 'T' },
+        pro: { baik: 'V', rusak: 'W', merk: 'X', tahun: 'Y', keterangan: 'Z' }
+      };
+
+      const columns = columnMap[updateType];
+      if (!columns) {
         return NextResponse.json({ success: false, error: 'Invalid update type' }, { status: 400 });
-    }
-
-    for (const update of updates) {
-      const { rowIndex, baik, rusak, merk, tahun, keterangan } = update;
-
-      if (rowIndex === undefined || rowIndex === null) continue;
-
-      // Update BAIK
-      if (baik !== undefined) {
-        batchData.push({
-          range: `APD STD!${columns.baik}${rowIndex}`,
-          values: [[baik]],
-        });
       }
 
-      // Update RUSAK/KADALUARSA
-      if (rusak !== undefined) {
-        batchData.push({
-          range: `APD STD!${columns.rusak}${rowIndex}`,
-          values: [[rusak]],
-        });
+      for (const update of updates) {
+        const { rowIndex, baik, rusak, merk, tahun, keterangan } = update;
+        if (rowIndex === undefined || rowIndex === null) continue;
+
+        if (baik !== undefined) {
+          batchData.push({ range: `${sheetName}!${columns.baik}${rowIndex}`, values: [[baik]] });
+        }
+        if (rusak !== undefined) {
+          batchData.push({ range: `${sheetName}!${columns.rusak}${rowIndex}`, values: [[rusak]] });
+        }
+        if (merk !== undefined) {
+          batchData.push({ range: `${sheetName}!${columns.merk}${rowIndex}`, values: [[merk]] });
+        }
+        if (tahun !== undefined) {
+          batchData.push({ range: `${sheetName}!${columns.tahun}${rowIndex}`, values: [[tahun]] });
+        }
+        if (keterangan !== undefined) {
+          batchData.push({ range: `${sheetName}!${columns.keterangan}${rowIndex}`, values: [[keterangan]] });
+        }
+      }
+    } else {
+      // GI locations: Use APD STD sheet with simpler column mapping
+      const sheetName = 'APD STD';
+
+      for (const update of updates) {
+        const { rowIndex, baik, rusak, merk, tahunPerolehan, keterangan } = update;
+        if (rowIndex === undefined || rowIndex === null) continue;
+
+        // GI column mapping: F=BAIK, G=RUSAK, H=MERK, I=TAHUN, J=KET
+        if (baik !== undefined) {
+          batchData.push({ range: `${sheetName}!F${rowIndex}`, values: [[baik]] });
+        }
+        if (rusak !== undefined) {
+          batchData.push({ range: `${sheetName}!G${rowIndex}`, values: [[rusak]] });
+        }
+        if (merk !== undefined) {
+          batchData.push({ range: `${sheetName}!H${rowIndex}`, values: [[merk]] });
+        }
+        if (tahunPerolehan !== undefined) {
+          batchData.push({ range: `${sheetName}!I${rowIndex}`, values: [[tahunPerolehan]] });
+        }
+        if (keterangan !== undefined) {
+          batchData.push({ range: `${sheetName}!J${rowIndex}`, values: [[keterangan]] });
+        }
       }
 
-      // Update MERK/TYPE
-      if (merk !== undefined) {
-        batchData.push({
-          range: `APD STD!${columns.merk}${rowIndex}`,
-          values: [[merk]],
-        });
-      }
-
-      // Update TAHUN PEROLEHAN
-      if (tahun !== undefined) {
-        batchData.push({
-          range: `APD STD!${columns.tahun}${rowIndex}`,
-          values: [[tahun]],
-        });
-      }
-
-      // Update KETERANGAN
-      if (keterangan !== undefined) {
-        batchData.push({
-          range: `APD STD!${columns.keterangan}${rowIndex}`,
-          values: [[keterangan]],
-        });
+      // Update date in K5 for GI
+      if (tanggalUpdate) {
+        batchData.push({ range: `${sheetName}!K5`, values: [[tanggalUpdate]] });
       }
     }
 
@@ -107,16 +116,6 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    // Add current date (or provided date) to cell K5 (Global Update Date)
-    // The prompt implied K4 or K5. Existing code used K5. User prompt "J5~:N5~= input, K4...?"
-    // I'll stick to K5 as the single source of truth for "Last Update" date unless user sees it in wrong place.
-    const currentDate = (tanggalUpdate || new Date().toISOString().split('T')[0]).toString();
-    batchData.push({
-      range: 'APD STD!K5',
-      values: [[currentDate]],
-    });
-
-    // Execute batch update
     await sheets.spreadsheets.values.batchUpdate({
       spreadsheetId: SHEET_ID,
       requestBody: {
