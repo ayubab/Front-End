@@ -90,7 +90,7 @@ export async function GET(request: NextRequest) {
     const rows = dataResponse.data.values || [];
     const apdData: any[] = [];
 
-    const categoryRows = new Set([5, 10, 13, 17, 20, 27, 29, 31]);
+    const categoryRows = new Set([5, 10, 13, 17, 20, 27, 29, 31, 37, 39, 41, 43, 45, 48]);
     rows.forEach((row, index) => {
       const rowIndex = index + 5; // Actual row number in sheet
       const jenisAPD = (row[0] || row[1] || row[2] || '').toString();

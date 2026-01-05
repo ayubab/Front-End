@@ -207,8 +207,11 @@ async function fetchGiData(sheets: any, sheetId: string) {
     const tahunPerolehan = row[8]?.toString() || '';
     const keterangan = row[9]?.toString() || '';
 
-    const isCategory = itemPeralatan && !apd && !baik && !rusak;
+    // Set category based on whether this is a category header row
+    // Category rows have content in column A but not in columns B, F, G
+    const isCategory = (itemPeralatan && !apd && !baik && !rusak);
 
+    // Skip completely empty rows (both A and B are empty)
     if (!itemPeralatan && !apd) continue;
 
     apdData.push({

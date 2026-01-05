@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { getLocationById } from '@/lib/data';
 import PhotoUpload from '@/app/components/PhotoUpload';
+import Image from 'next/image';
 
 interface APDItem {
   rowIndex: number;
@@ -334,6 +335,38 @@ export default function APDPage() {
                   Terakhir tercatat di sheet: {lastUpdateDate}
                 </p>
               )}
+            </div>
+          </div>
+        </div>
+
+        {/* Helm Color Reference Card */}
+        <div className="bg-white rounded-xl shadow-lg p-4 mb-6">
+          <h3 className="text-lg font-bold text-gray-800 mb-3">⛑️ Referensi Warna Helm</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="flex justify-center">
+              <Image src="/helm.png" alt="Warna Helm" width={300} height={150} className="rounded-lg object-contain" priority />
+            </div>
+            <div className="space-y-2 text-sm">
+              <div className="flex items-center gap-2">
+                <span className="w-4 h-4 bg-blue-500 rounded-full"></span>
+                <span className="text-gray-700"><strong>HELM BIRU</strong> - HAR, OPERATOR</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="w-4 h-4 bg-red-500 rounded-full"></span>
+                <span className="text-gray-700"><strong>HELM MERAH</strong> - P.K3, P.M, P.P</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="w-4 h-4 bg-yellow-400 rounded-full"></span>
+                <span className="text-gray-700"><strong>HELM KUNING</strong> - MITRA, MAGANG</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="w-4 h-4 bg-white border border-gray-300 rounded-full"></span>
+                <span className="text-gray-700"><strong>HELM PUTIH</strong> - TAMU & MANAJEMEN</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="w-4 h-4 bg-green-500 rounded-full"></span>
+                <span className="text-gray-700"><strong>HELM HIJAU</strong> - LINGKUNGAN</span>
+              </div>
             </div>
           </div>
         </div>
